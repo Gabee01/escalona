@@ -10,5 +10,5 @@
 Graph readScheduling();
 void parseInstruction(Graph scheduling, const char *input);
 bool isEqual(Graph schedulingd);
-void compareByVision(List originalScheduling, List serialScheduling);
+bool compareByVision(List originalScheduling, List serialScheduling);
 #endif PROJECT_MAIN_H

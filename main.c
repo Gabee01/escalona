@@ -4,14 +4,16 @@
 
 bool checkOperationsBefore(List instructions, char currentTime, int operation, int entity, char i);
 
+int findFirstWrite(List instructions, char entity);
+int findLastWrite(List instructions, char entity);
+
 int main() {
-    int first = 1;
+    int schedulingCount = 0;
 
     Graph scheduling;
 
-    while (first || scheduling != NULL){
-        if (first)
-            first = 0;
+    while (schedulingCount == 0 || scheduling != NULL){
+        schedulingCount ++;
 
         scheduling = readScheduling();
 
@@ -30,41 +32,84 @@ int main() {
                 }
             }
 
+            printf("%d ", schedulingCount);
+            for (int i = 0; i < scheduling->labels->count; i++)
+                if (i == scheduling->labels->count - 1)
+                    printf("%u ", scheduling->labels->data[i]);
+                else
+                    printf("%u,", scheduling->labels->data[i]);
+
             if (isAciclic(scheduling))
-                puts("SS");
+                printf("SS ");
             else
-                puts("NS");
+                printf("NS ");
 
             if (isEqual(scheduling))
-                puts("SV");
+                printf("SV\n");
             else
-                puts("NV");
+                printf("NV\n");
 
             free(scheduling);
         }
     }
 }
 
-void compareByVision(List originalScheduling, List serialScheduling) {
+bool compareByVision(List originalScheduling, List serialScheduling) {
 
+    Array entities = malloc(sizeof(Array));
+    entities->data = malloc(sizeof(char *));
+
+    //Tests writes order
     for(int i = 0; i < serialScheduling->count; i++){
-        if (serialScheduling->data[i][OPERATION] == 'R')
-            if(checkOperationsBefore(originalScheduling, originalScheduling->data[i][TRANSACTION], i, 'W',
-                                     originalScheduling->data[i][ENTITY]))//If there was W before this R
-                if(checkOperationsBefore(serialScheduling, serialScheduling->data[i][TRANSACTION], i, 'W',
-                                         serialScheduling->data[i][ENTITY])){//There must happen the same on S
+        if (serialScheduling->data[i][OPERATION] == 'C')
+            continue;
+        addArrayData(entities, serialScheduling->data[i][ENTITY]);
 
+        if (serialScheduling->data[i][OPERATION] == 'R'){
+            char currentSerialEntity = serialScheduling->data[i][ENTITY];
+
+            char currentOriginalEntity = originalScheduling->data[i][ENTITY];
+
+            int timeFirstWriteSerial = findFirstWrite(serialScheduling, currentSerialEntity);
+            int timeFirstWriteOriginal = findFirstWrite(originalScheduling, currentOriginalEntity);
+
+            if ((timeFirstWriteSerial > 0 && timeFirstWriteOriginal > 0)
+                && originalScheduling->data[timeFirstWriteOriginal][TRANSACTION] != serialScheduling->data[timeFirstWriteSerial][TRANSACTION])
+                return 0;
         }
     }
+
+    // Test last writes for each entity
+    while (entities->count > 0){
+        char currentEntity = entities->data[0];
+        int timeLastWriteSerial = findLastWrite(serialScheduling, currentEntity);
+        int timeLastWriteOriginal = findLastWrite(originalScheduling, currentEntity);
+
+        if ((timeLastWriteOriginal > 0 && timeLastWriteSerial > 0) // if there is a write
+            && serialScheduling->data[timeLastWriteSerial][TRANSACTION] != originalScheduling->data[timeLastWriteOriginal][TRANSACTION]) //and the first writes arent from the same transactions
+            return 0;//
+
+        removeArrayData(entities, currentEntity);
+    }
+
+    return 1;
 }
 
-bool checkOperationsBefore(List instructions, char currentTime, int operation, int entity, char i) {
-    for (int i = 0; i < instructions->count; i++){
-        if (instructions->data[i][TIME] < currentTime)
-            if (instructions->data[i][OPERATION] == operation && instructions->data[i][ENTITY] == entity);
-                return 1;
+int findFirstWrite(List instructions, char entity) {
 
-    }
+    for (int i = 0; i < instructions->count; i++)
+        if (instructions->data[i][ENTITY] == entity && instructions->data[i][OPERATION] == 'W')
+            return i;
+    return -1;
+}
+
+int findLastWrite(List instructions, char entity) {
+
+    for (int i = instructions->count -1; i >= 0 ; i--)
+        if (instructions->data[i][ENTITY] == entity && instructions->data[i][OPERATION] == 'W')
+            return i;
+
+    return -1;
 }
 
 bool isEqual(Graph scheduling) {
@@ -79,7 +124,8 @@ bool isEqual(Graph scheduling) {
             }
     }
 
-    compareByVision(scheduling->instructions, serialInstructions);
+    if (compareByVision(scheduling->instructions, serialInstructions))
+        return 1;
 
     return 0;
 }
