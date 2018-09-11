@@ -80,6 +80,9 @@
 				</MakeCommands>
 			</Target>
 		</Build>
+		<Unit filename="/Users/gabrielcarraro/Workspace/topicos-bd/escalona-refact/graph.c">
+			<Option target="escalona_refact"/>
+		</Unit>
 		<Unit filename="/Users/gabrielcarraro/Workspace/topicos-bd/escalona-refact/graph.h">
 			<Option target="escalona_refact"/>
 		</Unit>

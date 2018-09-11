@@ -123,6 +123,33 @@ escalona_refact/fast:
 	$(MAKE) -f CMakeFiles/escalona_refact.dir/build.make CMakeFiles/escalona_refact.dir/build
 .PHONY : escalona_refact/fast
 
+graph.o: graph.c.o
+
+.PHONY : graph.o
+
+# target to build an object file
+graph.c.o:
+	$(MAKE) -f CMakeFiles/escalona_refact.dir/build.make CMakeFiles/escalona_refact.dir/graph.c.o
+.PHONY : graph.c.o
+
+graph.i: graph.c.i
+
+.PHONY : graph.i
+
+# target to preprocess a source file
+graph.c.i:
+	$(MAKE) -f CMakeFiles/escalona_refact.dir/build.make CMakeFiles/escalona_refact.dir/graph.c.i
+.PHONY : graph.c.i
+
+graph.s: graph.c.s
+
+.PHONY : graph.s
+
+# target to generate assembly for a file
+graph.c.s:
+	$(MAKE) -f CMakeFiles/escalona_refact.dir/build.make CMakeFiles/escalona_refact.dir/graph.c.s
+.PHONY : graph.c.s
+
 main.o: main.c.o
 
 .PHONY : main.o
@@ -159,6 +186,9 @@ help:
 	@echo "... rebuild_cache"
 	@echo "... edit_cache"
 	@echo "... escalona_refact"
+	@echo "... graph.o"
+	@echo "... graph.i"
+	@echo "... graph.s"
 	@echo "... main.o"
 	@echo "... main.i"
 	@echo "... main.s"

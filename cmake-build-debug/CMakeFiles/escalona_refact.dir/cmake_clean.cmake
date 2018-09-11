@@ -1,5 +1,6 @@
 file(REMOVE_RECURSE
   "CMakeFiles/escalona_refact.dir/main.c.o"
+  "CMakeFiles/escalona_refact.dir/graph.c.o"
   "escalona_refact.pdb"
   "escalona_refact"
 )

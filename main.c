@@ -2,65 +2,111 @@
 #include "main.h"
 #include "graph.h"
 
-Graph initGraph();
 void parseInstruction(Graph scheduling, const char *input);
-Node getNode(Graph scheduling, char label);
-void addNode(Graph pGraph, Node pNode);
-void addArrayData(Array array, char data);
-void removeFromArray(Array array, char value);
-void addListData(List list, const char data[4]) ;
+
+int charToInt(char c);
 
 int main() {
 
-    Graph S = readScheduling();
-
-    if (hasCicle(S))
-        printf("SS");
-    else
-        printf("NS");
-}
-
-Graph readScheduling(){
-    char input[4];
     Graph scheduling = initGraph();
 
-    while(fscanf(stdin, "%c %c %c %c\n", &input[0], &input[1], &input[2], &input[3])){
+    while (scheduling != NULL){
+        scheduling = readScheduling();
+        List instructions = scheduling->instructions;
+
+        for (int i = 0; i < instructions->count; i++) {
+            if (instructions->data[i][OPERATION] == 'R')
+                operationAfter(scheduling, 'W', instructions->data[i][ENTITY],
+                               instructions->data[i][TIME]);//W(X) after R(X)
+            if (instructions->data[i][OPERATION] == 'W') {
+                operationAfter(scheduling, 'R', instructions->data[i][ENTITY],
+                               instructions->data[i][TIME]);//R(X) after W(X)
+                operationAfter(scheduling, 'W', instructions->data[i][ENTITY],
+                               instructions->data[i][TIME]);//W(X) after W(X)
+            }
+        }
+
+        if (isAciclic(scheduling))
+            printf("SS");
+        else
+            printf("NS");
+
+        free(scheduling);
+    }
+}
+
+//    Digrafo-Acíclico (n, Adj)
+//    1 para  u ← 1  até  n  faça
+//    2     cor[u] ← branco
+//    3 para  r ← 1  até  n  faça
+//    4     se  cor[r] = branco
+//    5         então  x ← Terr-Acicl (r)
+//    6             se  x = 0  então devolva  0  e pare
+//    7 devolva  1
+bool isAciclic(Graph pGraph) {
+    for (int i = 0; i < pGraph->nodesCount; i++)
+        pGraph->nodes[i]->color = WHITE;
+    for (int i = 1; i < pGraph->nodesCount; i++)
+        if (pGraph->nodes[i]->color == WHITE)
+            if (!aciclicTerritory(pGraph->nodes[i]))
+                return 0;
+    return 1;
+}
+
+//Terr-Acicl-R (u)
+//1  cor[u] ← cinza
+//2  para cada  v  em  Adj[u]  faça
+//3     se  cor[v] = cinza
+//4         então  devolva  0  e pare
+//5     se  cor[v] = branco
+//6         então  x ← Terr-Acicl-R (v)
+//7             se  x = 0  então  devolva  0  e pare
+//8  cor[u] ← preto
+//9  devolva   1
+bool aciclicTerritory(Node pNode) {
+
+    pNode->color = GRAY;
+    for (int i = 0; i < pNode->neighborsCount; i++){
+        if (pNode->neighbors[i]->color == GRAY)
+            return 0;
+        if (pNode->neighbors[i]->color == WHITE)
+            if (!aciclicTerritory(pNode->neighbors[i]))
+                return 0;
+    }
+    pNode->color = BLACK;
+    return 1;
+}
+
+Graph readScheduling() {
+    char input[6];
+    int lastCommitedTransaction = 0;
+
+    Graph scheduling = initGraph();
+
+    while(fscanf(stdin, "%c %c %c %c\n", &input[TIME], &input[TRANSACTION], &input[OPERATION], &input[ENTITY])){
         if (input[2] == 'C'){
-            removeFromArray(scheduling->awaiting, input[1]);
+            removeArrayData(scheduling->awaiting, input[TRANSACTION]);
+            addListData(scheduling->instructions, input);
+            if (lastCommitedTransaction < charToInt(input[TRANSACTION])){
+                lastCommitedTransaction = charToInt(input[TRANSACTION]);
+            }
             if (scheduling->awaiting->data == NULL)
                 return scheduling;
         }
-
-        parseInstruction(scheduling, input);
+        else{
+            parseInstruction(scheduling, input);
+        }
     }
+
     return NULL;
 }
 
-void removeFromArray(Array array, char value) {
-
-    for (int i = 0; i < array->count; i++){
-        if (array->data[i] == value){
-            array->data[i] = array->data[array->count - 1];
-            array->count--;
-            if (array->count == 0)
-                array->data = NULL;
-        }
-    }
-}
-
-Node newNode(const char label) {
-
-    Node node = malloc(sizeof(struct node *));
-    node->label = label; // Label = transaction name
-
-    return node;
+int charToInt(char c) {
+    return ((int) c - 48);
 }
 
 void parseInstruction(Graph scheduling, const char *input) {
     char transaction = input[1];
-
-//    if (scheduling == NULL)
-//        scheduling = initGraph();
 
     Node transaction_node = getNode(scheduling, transaction);
 
@@ -71,71 +117,4 @@ void parseInstruction(Graph scheduling, const char *input) {
     else{
         addListData(scheduling->instructions, input);
     }
-}
-
-void addNode(Graph pGraph, Node pNode){
-
-    if (pGraph->nodesCount == 0)
-        pGraph->nodes = malloc(sizeof(Node));
-    else
-        realloc(pGraph->nodes, (sizeof(Node *) * (pGraph->nodesCount + 1)));
-
-    pGraph->nodes[pGraph->nodesCount] = pNode;
-    addArrayData(pGraph->labels, pNode->label);
-    addArrayData(pGraph->awaiting, pNode->label);
-
-    pGraph->nodesCount++;
-}
-
-Node getNode(Graph scheduling, char label) {
-
-     for (int i = 0; i < scheduling->nodesCount; i++) {
-         if (scheduling->labels->data[i] == label){
-             return scheduling->nodes[i];
-         }
-     }
-
-     return NULL;
-}
-
-Graph initGraph() {
-    Graph g = malloc(sizeof(Graph));
-
-    g->nodes = malloc(sizeof(Node *));
-    g->labels = malloc(sizeof(Array));
-    g->labels->count = 0;
-    g->awaiting = malloc(sizeof(Array));
-    g->awaiting->count = 0;
-    g->instructions = malloc(sizeof(List));
-    g->instructions->count = 0;
-    g->edgesCount = 0;
-    g->nodesCount = 0;
-
-    return g;
-}
-
-void addArrayData(Array array, char data) {
-    if (array->count == 0)
-        array->data = malloc(sizeof(char *));
-    else
-        realloc(array->data, sizeof(char *) * (array->count + 1));
-
-    array->data[array->count] = data;
-    array->count++;
-}
-
-void addListData(List list, const char data[4]) {
-    if (list->count == 0)
-        list->data = malloc((sizeof(char **)));
-    else
-        realloc(list->data, (sizeof(char **) * (list->count + 1)));
-
-    list->data[list->count] = malloc(sizeof(char) * 4);
-
-    list->data[list->count][0] = data[0];
-    list->data[list->count][1] = data[1];
-    list->data[list->count][2] = data[2];
-    list->data[list->count][3] = data[3];
-
-    list->count++;
 }
