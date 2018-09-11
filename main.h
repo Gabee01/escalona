@@ -8,10 +8,7 @@
 #define PROJECT_MAIN_H
 
 Graph readScheduling();
-
-
-void addToCommandsList();
-void printCommandsList(char **matrix, int size);
-
-void findCicle();
+void parseInstruction(Graph scheduling, const char *input);
+bool isEqual(Graph schedulingd);
+void compareByVision(List originalScheduling, List serialScheduling);
 #endif PROJECT_MAIN_H

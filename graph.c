@@ -79,12 +79,8 @@ void addNode(Graph pGraph, Node pNode){
 
 void addNeighbor(Node pNode, Node neighbor) {
     pNode->neighbors = (Node *)realloc(pNode->neighbors, (sizeof(Node) * pNode->neighborsCount + 1));
-//    pNode->neighbors[pNode->neighborsCount + 1] = malloc(sizeof(neighbor));
-    pNode->neighbors[pNode->neighborsCount] = neighbor;
-//
-//    pNode->neighbors[pNode->neighborsCount]->label = neighbor->label;
-//    pNode->neighbors[pNode->neighborsCount]->color = neighbor->color;
 
+    pNode->neighbors[pNode->neighborsCount] = neighbor;
     pNode->neighborsCount = pNode->neighborsCount + 1;
 }
 
@@ -115,12 +111,4 @@ void addEdges(Graph pGraph, char src, char dst) {
 
     addNeighbor(nodeSrc, nodeDst);
     pGraph->edgesCount++;
-}
-
-void checkOperationsAfter(Graph scheduling, char findOperation, char transaction, char entity, char time) {
-    List instructions = scheduling->instructions;
-
-    for (int j = time + 1; j < instructions->count; j++)
-        if (instructions->data[j][OPERATION] == findOperation && instructions->data[j][ENTITY] == entity && instructions->data[j][TRANSACTION] != transaction) //RX em Tj
-            addEdges(scheduling, instructions->data[j][TRANSACTION], transaction);
 }

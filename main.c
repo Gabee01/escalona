@@ -2,7 +2,7 @@
 #include "main.h"
 #include "graph.h"
 
-void parseInstruction(Graph scheduling, const char *input);
+bool checkOperationsBefore(List instructions, char currentTime, int operation, int entity, char i);
 
 int main() {
     int first = 1;
@@ -15,27 +15,73 @@ int main() {
 
         scheduling = readScheduling();
 
-        List instructions = scheduling->instructions;
+        if (scheduling != NULL){
+            List instructions = scheduling->instructions;
 
-        for (int i = 0; i < instructions->count; i++) {
-            if (instructions->data[i][OPERATION] == 'R')
-                checkOperationsAfter(scheduling, 'W', instructions->data[i][TRANSACTION], instructions->data[i][ENTITY],
-                                     instructions->data[i][TIME]);//W(X) after R(X)
-            if (instructions->data[i][OPERATION] == 'W') {
-                checkOperationsAfter(scheduling, 'R', instructions->data[i][TRANSACTION], instructions->data[i][ENTITY],
-                                     instructions->data[i][TIME]);//R(X) after W(X)
-                checkOperationsAfter(scheduling, 'W', instructions->data[i][TRANSACTION], instructions->data[i][ENTITY],
-                                     instructions->data[i][TIME]);//W(X) after W(X)
+            for (int i = 0; i < instructions->count; i++) {
+                if (instructions->data[i][OPERATION] == 'R')
+                    checkOperationsAfter(scheduling, 'W', instructions->data[i][TRANSACTION], instructions->data[i][ENTITY],
+                                         instructions->data[i][TIME]);//W(X) after R(X)
+                if (instructions->data[i][OPERATION] == 'W') {
+                    checkOperationsAfter(scheduling, 'R', instructions->data[i][TRANSACTION], instructions->data[i][ENTITY],
+                                         instructions->data[i][TIME]);//R(X) after W(X)
+                    checkOperationsAfter(scheduling, 'W', instructions->data[i][TRANSACTION], instructions->data[i][ENTITY],
+                                         instructions->data[i][TIME]);//W(X) after W(X)
+                }
             }
+
+            if (isAciclic(scheduling))
+                puts("SS");
+            else
+                puts("NS");
+
+            if (isEqual(scheduling))
+                puts("SV");
+            else
+                puts("NV");
+
+            free(scheduling);
         }
-
-        if (isAciclic(scheduling))
-            printf("SS");
-        else
-            printf("NS");
-
-        free(scheduling);
     }
+}
+
+void compareByVision(List originalScheduling, List serialScheduling) {
+
+    for(int i = 0; i < serialScheduling->count; i++){
+        if (serialScheduling->data[i][OPERATION] == 'R')
+            if(checkOperationsBefore(originalScheduling, originalScheduling->data[i][TRANSACTION], i, 'W',
+                                     originalScheduling->data[i][ENTITY]))//If there was W before this R
+                if(checkOperationsBefore(serialScheduling, serialScheduling->data[i][TRANSACTION], i, 'W',
+                                         serialScheduling->data[i][ENTITY])){//There must happen the same on S
+
+        }
+    }
+}
+
+bool checkOperationsBefore(List instructions, char currentTime, int operation, int entity, char i) {
+    for (int i = 0; i < instructions->count; i++){
+        if (instructions->data[i][TIME] < currentTime)
+            if (instructions->data[i][OPERATION] == operation && instructions->data[i][ENTITY] == entity);
+                return 1;
+
+    }
+}
+
+bool isEqual(Graph scheduling) {
+    List serialInstructions = malloc(sizeof(List));
+    serialInstructions->data = malloc(sizeof(char **));
+    serialInstructions->count = 0;
+    for(int i = 0; i < scheduling->labels->count; i++){
+         // group transactions from same transaction
+        for (int j = 0; j < scheduling->instructions->count; j++)
+            if (scheduling->instructions->data[j][TRANSACTION] == scheduling->labels->data[i]){
+                addListData(serialInstructions, scheduling->instructions->data[j]);
+            }
+    }
+
+    compareByVision(scheduling->instructions, serialInstructions);
+
+    return 0;
 }
 
 //    Digrafo-Acíclico (n, Adj)
@@ -87,7 +133,7 @@ Graph readScheduling() {
 
     int time = 0;
     int transaction = 0;
-    while(fscanf(stdin, "%d %d %c %c\n", &time, &transaction, &input[OPERATION], &input[ENTITY])){
+    while(fscanf(stdin, "%d %d %c %c\n", &time, &transaction, &input[OPERATION], &input[ENTITY]) > 0){
         input[TIME] = (unsigned char) time;
         input[TRANSACTION] = (unsigned char) transaction;
         if (input[OPERATION] == 'C'){
@@ -103,6 +149,15 @@ Graph readScheduling() {
     }
     return NULL;
 }
+
+void checkOperationsAfter(Graph scheduling, char findOperation, char transaction, char entity, char time) {
+    List instructions = scheduling->instructions;
+
+    for (int j = time + 1; j < instructions->count; j++)
+        if (instructions->data[j][OPERATION] == findOperation && instructions->data[j][ENTITY] == entity && instructions->data[j][TRANSACTION] != transaction) //RX em Tj
+            addEdges(scheduling, instructions->data[j][TRANSACTION], transaction);
+}
+
 
 void parseInstruction(Graph scheduling, const char *input) {
     char transaction = input[1];
