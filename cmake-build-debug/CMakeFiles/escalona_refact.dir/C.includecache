@@ -1,0 +1,26 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/Users/gabrielcarraro/Workspace/topicos-bd/escalona-refact/graph.h
+
+/Users/gabrielcarraro/Workspace/topicos-bd/escalona-refact/main.c
+stdbool.h
+-
+main.h
+/Users/gabrielcarraro/Workspace/topicos-bd/escalona-refact/main.h
+graph.h
+/Users/gabrielcarraro/Workspace/topicos-bd/escalona-refact/graph.h
+
+/Users/gabrielcarraro/Workspace/topicos-bd/escalona-refact/main.h
+stdlib.h
+-
+stdio.h
+-
+graph.h
+/Users/gabrielcarraro/Workspace/topicos-bd/escalona-refact/graph.h
+

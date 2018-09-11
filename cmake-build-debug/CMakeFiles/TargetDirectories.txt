@@ -1,0 +1,3 @@
+/Users/gabrielcarraro/Workspace/topicos-bd/escalona-refact/cmake-build-debug/CMakeFiles/rebuild_cache.dir
+/Users/gabrielcarraro/Workspace/topicos-bd/escalona-refact/cmake-build-debug/CMakeFiles/edit_cache.dir
+/Users/gabrielcarraro/Workspace/topicos-bd/escalona-refact/cmake-build-debug/CMakeFiles/escalona_refact.dir
