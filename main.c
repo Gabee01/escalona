@@ -4,25 +4,28 @@
 
 void parseInstruction(Graph scheduling, const char *input);
 
-int charToInt(char c);
-
 int main() {
+    int first = 1;
 
-    Graph scheduling = initGraph();
+    Graph scheduling;
 
-    while (scheduling != NULL){
+    while (first || scheduling != NULL){
+        if (first)
+            first = 0;
+
         scheduling = readScheduling();
+
         List instructions = scheduling->instructions;
 
         for (int i = 0; i < instructions->count; i++) {
             if (instructions->data[i][OPERATION] == 'R')
-                operationAfter(scheduling, 'W', instructions->data[i][ENTITY],
-                               instructions->data[i][TIME]);//W(X) after R(X)
+                checkOperationsAfter(scheduling, 'W', instructions->data[i][TRANSACTION], instructions->data[i][ENTITY],
+                                     instructions->data[i][TIME]);//W(X) after R(X)
             if (instructions->data[i][OPERATION] == 'W') {
-                operationAfter(scheduling, 'R', instructions->data[i][ENTITY],
-                               instructions->data[i][TIME]);//R(X) after W(X)
-                operationAfter(scheduling, 'W', instructions->data[i][ENTITY],
-                               instructions->data[i][TIME]);//W(X) after W(X)
+                checkOperationsAfter(scheduling, 'R', instructions->data[i][TRANSACTION], instructions->data[i][ENTITY],
+                                     instructions->data[i][TIME]);//R(X) after W(X)
+                checkOperationsAfter(scheduling, 'W', instructions->data[i][TRANSACTION], instructions->data[i][ENTITY],
+                                     instructions->data[i][TIME]);//W(X) after W(X)
             }
         }
 
@@ -46,7 +49,7 @@ int main() {
 bool isAciclic(Graph pGraph) {
     for (int i = 0; i < pGraph->nodesCount; i++)
         pGraph->nodes[i]->color = WHITE;
-    for (int i = 1; i < pGraph->nodesCount; i++)
+    for (int i = 0; i < pGraph->nodesCount; i++)
         if (pGraph->nodes[i]->color == WHITE)
             if (!aciclicTerritory(pGraph->nodes[i]))
                 return 0;
@@ -70,7 +73,7 @@ bool aciclicTerritory(Node pNode) {
         if (pNode->neighbors[i]->color == GRAY)
             return 0;
         if (pNode->neighbors[i]->color == WHITE)
-            if (!aciclicTerritory(pNode->neighbors[i]))
+            if (aciclicTerritory(pNode->neighbors[i]) == 0)
                 return 0;
     }
     pNode->color = BLACK;
@@ -78,31 +81,27 @@ bool aciclicTerritory(Node pNode) {
 }
 
 Graph readScheduling() {
-    char input[6];
-    int lastCommitedTransaction = 0;
+    char input[4];
 
     Graph scheduling = initGraph();
 
-    while(fscanf(stdin, "%c %c %c %c\n", &input[TIME], &input[TRANSACTION], &input[OPERATION], &input[ENTITY])){
-        if (input[2] == 'C'){
-            removeArrayData(scheduling->awaiting, input[TRANSACTION]);
+    int time = 0;
+    int transaction = 0;
+    while(fscanf(stdin, "%d %d %c %c\n", &time, &transaction, &input[OPERATION], &input[ENTITY])){
+        input[TIME] = (unsigned char) time;
+        input[TRANSACTION] = (unsigned char) transaction;
+        if (input[OPERATION] == 'C'){
             addListData(scheduling->instructions, input);
-            if (lastCommitedTransaction < charToInt(input[TRANSACTION])){
-                lastCommitedTransaction = charToInt(input[TRANSACTION]);
-            }
+            removeArrayData(scheduling->awaiting, input[TRANSACTION]);
             if (scheduling->awaiting->data == NULL)
                 return scheduling;
         }
         else{
             parseInstruction(scheduling, input);
+            addListData(scheduling->instructions, input);
         }
     }
-
     return NULL;
-}
-
-int charToInt(char c) {
-    return ((int) c - 48);
 }
 
 void parseInstruction(Graph scheduling, const char *input) {
@@ -111,10 +110,7 @@ void parseInstruction(Graph scheduling, const char *input) {
     Node transaction_node = getNode(scheduling, transaction);
 
     if (transaction_node == NULL){
-        transaction_node = newNode(input[1]);
+        transaction_node = newNode(input[TRANSACTION]);
         addNode(scheduling, transaction_node);
-    }
-    else{
-        addListData(scheduling->instructions, input);
     }
 }

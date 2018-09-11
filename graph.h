@@ -50,7 +50,7 @@ void addListData(List list, const char data[4]);
 void addEdges(Graph pGraph, char, char);
 void addNeighbor(Node pNode, Node neighbor);
 //adds an edge every time it finds a last operation on the same entity as the first operation
-void operationAfter(Graph scheduling, char findOperation, char entity, int time);
+void checkOperationsAfter(Graph scheduling, char findOperation, char entity, char time, char i);
 
 #define WHITE 0
 #define GRAY 1

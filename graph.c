@@ -5,9 +5,12 @@
 #include "graph.h"
 
 Graph initGraph() {
-    Graph g = malloc(sizeof(Graph));
+    Graph g = malloc(sizeof(struct graph));
 
-    g->nodes = malloc(sizeof(Node *));
+    g->edgesCount = 0;
+    g->nodesCount = 0;
+
+    g->nodes = malloc(sizeof(Node));
     g->labels = malloc(sizeof(Array));
     g->labels->data = malloc(sizeof(char *));
     g->labels->count = 0;
@@ -17,49 +20,38 @@ Graph initGraph() {
     g->instructions = malloc(sizeof(List));
     g->instructions->data = malloc(sizeof(char **));
     g->instructions->count = 0;
-    g->edgesCount = 0;
-    g->nodesCount = 0;
+
+    g->nodes = NULL;
 
     return g;
 }
 
 Node newNode(const char label) {
-
-    Node node = malloc(sizeof(Node));
+    Node node = malloc(sizeof(struct node));
     node->label = label; // Label = transaction name
+    node->neighbors = malloc(sizeof(Node));
     node->neighborsCount = 0;
+    node->color = WHITE;
 
     return node;
 }
 
-
-void addNode(Graph pGraph, Node pNode){
-
-    if (pGraph->nodesCount == 0)
-        pGraph->nodes = malloc(sizeof(Node *));
-
-    pGraph->nodes[pGraph->nodesCount] = malloc(sizeof(Node));
-
-    pGraph->nodes[pGraph->nodesCount] = pNode;
-    addArrayData(pGraph->labels, pNode->label);
-    addArrayData(pGraph->awaiting, pNode->label);
-
-    pGraph->nodesCount++;
-}
-
 void addArrayData(Array array, char data) {
-    realloc(array->data, (sizeof(char) * array->count + 1));
+    //if have data, see if already exists
     if (array->count > 0)
         for (int i = 0; i < array->count; i++)
             if (array->data[i] == data)
                 return;
 
+    array->data = (char *) realloc(array->data, (sizeof(char) * (array->count + 1)));
     array->data[array->count] = data;
     array->count++;
 }
 
 void addListData(List list, const char data[4]) {
-    list->data[list->count] = malloc(sizeof(char) * 4);
+    list->data = (char **) realloc(list->data, (sizeof(char *) * list->count + 1));
+
+    list->data[list->count] = malloc(sizeof(char[4]));
 
     list->data[list->count][TIME] = data[TIME];
     list->data[list->count][TRANSACTION] = data[TRANSACTION];
@@ -69,19 +61,34 @@ void addListData(List list, const char data[4]) {
     list->count++;
 }
 
-Node getNode(Graph scheduling, char label) {
 
-    for (int i = 0; i < scheduling->nodesCount; i++) {
-        if (scheduling->labels->data[i] == label) {
-            return scheduling->nodes[i];
-        }
-    }
+void addNode(Graph pGraph, Node pNode){
+    pGraph->nodes = realloc(pGraph->nodes, (sizeof(struct node) * (pGraph->nodesCount + 1)));
 
-    return NULL;
+    pGraph->nodes[pGraph->nodesCount] = malloc(sizeof(struct node));
+    pGraph->nodes[pGraph->nodesCount]->neighbors = malloc(sizeof(Node));
+    pGraph->nodes[pGraph->nodesCount]->neighborsCount = 0;
+    pGraph->nodes[pGraph->nodesCount]->color = pNode->color;
+    pGraph->nodes[pGraph->nodesCount]->label = pNode->label;
+
+    addArrayData(pGraph->labels, pNode->label);
+    addArrayData(pGraph->awaiting, pNode->label);
+
+    pGraph->nodesCount++;
+}
+
+void addNeighbor(Node pNode, Node neighbor) {
+    pNode->neighbors = (Node *)realloc(pNode->neighbors, (sizeof(Node) * pNode->neighborsCount + 1));
+//    pNode->neighbors[pNode->neighborsCount + 1] = malloc(sizeof(neighbor));
+    pNode->neighbors[pNode->neighborsCount] = neighbor;
+//
+//    pNode->neighbors[pNode->neighborsCount]->label = neighbor->label;
+//    pNode->neighbors[pNode->neighborsCount]->color = neighbor->color;
+
+    pNode->neighborsCount = pNode->neighborsCount + 1;
 }
 
 void removeArrayData(Array array, char data) {
-
     for (int i = 0; i < array->count; i++){
         if (array->data[i] == data){
             array->data[i] = array->data[array->count - 1];
@@ -89,13 +96,20 @@ void removeArrayData(Array array, char data) {
             if (array->count == 0)
                 array->data = NULL;
             else
-                realloc(array->data, sizeof(char) * array->count);
+                array->data = realloc(array->data, (sizeof(char) * array->count));
         }
     }
 }
 
-void addEdges(Graph pGraph, char src, char dst) {
+Node getNode(Graph scheduling, char label) {
+    for (int i = 0; i < scheduling->nodesCount; i++)
+        if (scheduling->labels->data[i] == label)
+            return scheduling->nodes[i];
 
+    return NULL;
+}
+
+void addEdges(Graph pGraph, char src, char dst) {
     Node nodeSrc = getNode(pGraph, src);
     Node nodeDst = getNode(pGraph, dst);
 
@@ -103,25 +117,10 @@ void addEdges(Graph pGraph, char src, char dst) {
     pGraph->edgesCount++;
 }
 
-void addNeighbor(Node pNode, Node neighbor) {
-
-    if (pNode->neighborsCount == 0)
-        pNode->neighbors = malloc(sizeof(Node *));
-    else
-        realloc(pNode->neighbors, (sizeof(Node *) * pNode->neighborsCount + 1));
-
-    pNode->neighbors[pNode->neighborsCount] = neighbor;
-    pNode->neighborsCount++;
-}
-
-void operationAfter(Graph scheduling, char findOperation, char entity, int time) {
-
+void checkOperationsAfter(Graph scheduling, char findOperation, char transaction, char entity, char time) {
     List instructions = scheduling->instructions;
 
-//    for(int i = 0; i < instructions->count; i++)
-//        if (instructions->data[i][OPERATION] == firstOperation) //WX em Ti
-            for (int j = time + 1; j < instructions->count; j++)
-                if (instructions->data[j][OPERATION] == findOperation && instructions->data[j][ENTITY] == entity) //RX em Tj
-                    addEdges(scheduling, instructions->data[time][TRANSACTION], instructions->data[j][TRANSACTION]);
-
+    for (int j = time + 1; j < instructions->count; j++)
+        if (instructions->data[j][OPERATION] == findOperation && instructions->data[j][ENTITY] == entity && instructions->data[j][TRANSACTION] != transaction) //RX em Tj
+            addEdges(scheduling, instructions->data[j][TRANSACTION], transaction);
 }
