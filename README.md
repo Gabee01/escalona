@@ -1,5 +1,10 @@
 # Escalonamento de transações
 
+## Universidade Federal do Paraná (UFPR).
+### Aluno: Gabriel Alcides Carraro
+### Professor: Eduardo Cunha de Almeida.
+### Disciplina: Banco de dados/Tópicos em bancos de dados.
+
 Nesse trabalho foram implementados dois algoritmos que decidem se duas transações podem ser executadas paralelamente.
 As transações são lidas até que todas elas sejam commitadas. Quando esse evento aconte, um escalonamento novo e gerado para essas transações e analisado pelos dois algoritmos.
 
@@ -16,7 +21,7 @@ Após essa adição de arestas, podemos testar o grafo para seriabilidade por co
 
 Para a detecção do ciclo no grafo, foram utilizados os algoritmos apresentados [nesse material sobre ciclos em grafos] do Paulo Feofiloff da USP.
 
-Nesse material são apresentados vários algoritmos para a detecção de um território aciclico. Optei pela abordagem recursiva de Terr-Acicl, e o mesmo está como um comentario logo acima do método que o implementa no código (bool aciclicTerritory(Node pNode)), da mesma forma, o método (declarado bool isAciclic(Graph pGraph)) implementa a detecção de um ciclo de fato como apresentado na mesma página.
+Nesse material são apresentados vários algoritmos para a *detecção de um território aciclico*. Optei pela abordagem recursiva de Terr-Acicl, e o mesmo está como um comentario logo acima do método que o implementa no código (bool aciclicTerritory(Node pNode)), da mesma forma, o método (declarado bool isAciclic(Graph pGraph)) implementa a *detecção de um ciclo* de fato como apresentado na mesma página.
 
 Com esse algoritmo de detecção de ciclos no grafo, obtemos a resposta do teste de seriabilidade por conflito.
 
@@ -33,7 +38,3 @@ Responsável por iterar e tentar as combinações das ordens das transação (fu
 Onde as listas de transações são analisadas para sabermos se obedecem as regras exigidas.
 
 [nesse material sobre ciclos em grafos]:https://www.ime.usp.br/~pf/analise_de_algoritmos/aulas/cycles-and-dags.html
-
-Gabriel Alcides Carraro - Universidade Federal do Paraná (UFPR)
-Professor: Eduardo Cunha de Almeida
-Disciplina: Banco de dados/Tópicos em bancos de dados
