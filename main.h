@@ -9,6 +9,14 @@
 
 Graph readScheduling();
 void parseInstruction(Graph scheduling, const char *input);
-bool isEqual(Graph schedulingd);
+//adds an edge every time it finds a last operation on the same entity as the first operation
+void checkOperationsAfter(Graph scheduling, char findOperation, char entity, char time, char i);
+bool isAciclic(Graph pGraph);
+bool aciclicTerritory(Node pNode);
+
+bool hasEquivalent(Graph schedulingd);
 bool compareByVision(List originalScheduling, List serialScheduling);
+int findFirstWrite(List instructions, char entity);
+int findLastWrite(List instructions, char entity);
+
 #endif PROJECT_MAIN_H

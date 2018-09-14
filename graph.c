@@ -1,5 +1,5 @@
 //
-// Created by Gabriel Carraro on 9/11/18.
+// Created by Gabriel Carraro on 9/10/18.
 //
 
 #include "graph.h"
@@ -11,12 +11,14 @@ Graph initGraph() {
     g->nodesCount = 0;
 
     g->nodes = malloc(sizeof(Node));
-    g->labels = malloc(sizeof(Array));
-    g->labels->data = malloc(sizeof(char *));
-    g->labels->count = 0;
+    g->transactionsIds = malloc(sizeof(Array));
+    g->transactionsIds->data = malloc(sizeof(char *));
+    g->transactionsIds->count = 0;
+
     g->awaiting = malloc(sizeof(Array));
     g->awaiting->data = malloc(sizeof(char *));
     g->awaiting->count = 0;
+
     g->instructions = malloc(sizeof(List));
     g->instructions->data = malloc(sizeof(char **));
     g->instructions->count = 0;
@@ -28,12 +30,50 @@ Graph initGraph() {
 
 Node newNode(const char label) {
     Node node = malloc(sizeof(struct node));
-    node->label = label; // Label = transaction name
+    node->label = label; // Label = transaction id
     node->neighbors = malloc(sizeof(Node));
     node->neighborsCount = 0;
     node->color = WHITE;
 
     return node;
+}
+
+void addNode(Graph pGraph, Node pNode){
+    pGraph->nodes = realloc(pGraph->nodes, (sizeof(struct node) * (pGraph->nodesCount + 1)));
+
+    pGraph->nodes[pGraph->nodesCount] = malloc(sizeof(struct node));
+    pGraph->nodes[pGraph->nodesCount]->neighbors = malloc(sizeof(Node));
+    pGraph->nodes[pGraph->nodesCount]->neighborsCount = 0;
+    pGraph->nodes[pGraph->nodesCount]->color = pNode->color;
+    pGraph->nodes[pGraph->nodesCount]->label = pNode->label;
+
+    addArrayData(pGraph->transactionsIds, pNode->label);
+    addArrayData(pGraph->awaiting, pNode->label);
+
+    pGraph->nodesCount++;
+}
+
+Node getNode(Graph scheduling, char label) {
+    for (int i = 0; i < scheduling->nodesCount; i++)
+        if (scheduling->transactionsIds->data[i] == label)
+            return scheduling->nodes[i];
+
+    return NULL;
+}
+
+void newNeighborhood(Node pNode, Node neighbor) {
+    pNode->neighbors = (Node *)realloc(pNode->neighbors, (sizeof(Node) * pNode->neighborsCount + 1));
+
+    pNode->neighbors[pNode->neighborsCount] = neighbor;
+    pNode->neighborsCount = pNode->neighborsCount + 1;
+}
+
+void addEdges(Graph pGraph, char src, char dst) {
+    Node nodeSrc = getNode(pGraph, src);
+    Node nodeDst = getNode(pGraph, dst);
+
+    newNeighborhood(nodeSrc, nodeDst);
+    pGraph->edgesCount++;
 }
 
 void addArrayData(Array array, char data) {
@@ -61,29 +101,6 @@ void addListData(List list, const char data[4]) {
     list->count++;
 }
 
-
-void addNode(Graph pGraph, Node pNode){
-    pGraph->nodes = realloc(pGraph->nodes, (sizeof(struct node) * (pGraph->nodesCount + 1)));
-
-    pGraph->nodes[pGraph->nodesCount] = malloc(sizeof(struct node));
-    pGraph->nodes[pGraph->nodesCount]->neighbors = malloc(sizeof(Node));
-    pGraph->nodes[pGraph->nodesCount]->neighborsCount = 0;
-    pGraph->nodes[pGraph->nodesCount]->color = pNode->color;
-    pGraph->nodes[pGraph->nodesCount]->label = pNode->label;
-
-    addArrayData(pGraph->labels, pNode->label);
-    addArrayData(pGraph->awaiting, pNode->label);
-
-    pGraph->nodesCount++;
-}
-
-void addNeighbor(Node pNode, Node neighbor) {
-    pNode->neighbors = (Node *)realloc(pNode->neighbors, (sizeof(Node) * pNode->neighborsCount + 1));
-
-    pNode->neighbors[pNode->neighborsCount] = neighbor;
-    pNode->neighborsCount = pNode->neighborsCount + 1;
-}
-
 void removeArrayData(Array array, char data) {
     for (int i = 0; i < array->count; i++){
         if (array->data[i] == data){
@@ -95,20 +112,4 @@ void removeArrayData(Array array, char data) {
                 array->data = realloc(array->data, (sizeof(char) * array->count));
         }
     }
-}
-
-Node getNode(Graph scheduling, char label) {
-    for (int i = 0; i < scheduling->nodesCount; i++)
-        if (scheduling->labels->data[i] == label)
-            return scheduling->nodes[i];
-
-    return NULL;
-}
-
-void addEdges(Graph pGraph, char src, char dst) {
-    Node nodeSrc = getNode(pGraph, src);
-    Node nodeDst = getNode(pGraph, dst);
-
-    addNeighbor(nodeSrc, nodeDst);
-    pGraph->edgesCount++;
 }

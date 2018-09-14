@@ -35,10 +35,18 @@ struct graph {
     int nodesCount;
     int edgesCount;
     Node *nodes;
-    Array labels;
+    Array transactionsIds;
     Array awaiting;
     List instructions;
 };
+
+#define WHITE 0
+#define GRAY 1
+#define BLACK 99
+#define TIME 0
+#define TRANSACTION 1
+#define OPERATION 2
+#define ENTITY 3
 
 Graph initGraph();
 Node newNode(char label);
@@ -48,21 +56,6 @@ void addArrayData(Array array, char data);
 void removeArrayData(Array array, char data);
 void addListData(List list, const char data[4]);
 void addEdges(Graph pGraph, char, char);
-void addNeighbor(Node pNode, Node neighbor);
-//adds an edge every time it finds a last operation on the same entity as the first operation
-void checkOperationsAfter(Graph scheduling, char findOperation, char entity, char time, char i);
-
-#define WHITE 0
-#define GRAY 1
-#define BLACK 99
-
-bool isAciclic(Graph pGraph);
-bool aciclicTerritory(Node pNode);
-
-#define TIME 0
-#define TRANSACTION 1
-#define OPERATION 2
-#define ENTITY 3
-
+void newNeighborhood(Node pNode, Node neighbor);
 
 #endif //ESCALONA_REFACT_GRAPH_H

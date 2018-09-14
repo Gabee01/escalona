@@ -1,18 +1,12 @@
 #include <stdbool.h>
 #include "main.h"
-#include "graph.h"
-
-bool checkOperationsBefore(List instructions, char currentTime, int operation, int entity, char i);
-
-int findFirstWrite(List instructions, char entity);
-int findLastWrite(List instructions, char entity);
 
 int main() {
     int schedulingCount = 0;
 
     Graph scheduling;
 
-    while (schedulingCount == 0 || scheduling != NULL){
+    while (scheduling != NULL || schedulingCount == 0){
         schedulingCount ++;
 
         scheduling = readScheduling();
@@ -33,18 +27,18 @@ int main() {
             }
 
             printf("%d ", schedulingCount);
-            for (int i = 0; i < scheduling->labels->count; i++)
-                if (i == scheduling->labels->count - 1)
-                    printf("%u ", scheduling->labels->data[i]);
+            for (int i = 0; i < scheduling->transactionsIds->count; i++)
+                if (i == scheduling->transactionsIds->count - 1)
+                    printf("%u ", scheduling->transactionsIds->data[i]);
                 else
-                    printf("%u,", scheduling->labels->data[i]);
+                    printf("%u,", scheduling->transactionsIds->data[i]);
 
             if (isAciclic(scheduling))
                 printf("SS ");
             else
                 printf("NS ");
 
-            if (isEqual(scheduling))
+            if (hasEquivalent(scheduling))
                 printf("SV\n");
             else
                 printf("NV\n");
@@ -112,17 +106,15 @@ int findLastWrite(List instructions, char entity) {
     return -1;
 }
 
-bool isEqual(Graph scheduling) {
+bool hasEquivalent(Graph scheduling) {
     List serialInstructions = malloc(sizeof(List));
     serialInstructions->data = malloc(sizeof(char **));
     serialInstructions->count = 0;
-    for(int i = 0; i < scheduling->labels->count; i++){
-         // group transactions from same transaction
+    for(int i = 0; i < scheduling->transactionsIds->count; i++)
+         // group instructions from same transaction
         for (int j = 0; j < scheduling->instructions->count; j++)
-            if (scheduling->instructions->data[j][TRANSACTION] == scheduling->labels->data[i]){
+            if (scheduling->instructions->data[j][TRANSACTION] == scheduling->transactionsIds->data[i])
                 addListData(serialInstructions, scheduling->instructions->data[j]);
-            }
-    }
 
     if (compareByVision(scheduling->instructions, serialInstructions))
         return 1;
