@@ -34,6 +34,7 @@ Node newNode(const char label) {
     node->neighbors = malloc(sizeof(Node));
     node->neighborsCount = 0;
     node->color = WHITE;
+    node->log = malloc(sizeof(List));
 
     return node;
 }
@@ -88,15 +89,16 @@ void addArrayData(Array array, char data) {
     array->count++;
 }
 
-void addListData(List list, const char data[4]) {
+void addListData(List list, const char data[4 + MAX_VALUE_SIZE]) {
     list->data = (char **) realloc(list->data, (sizeof(char *) * list->count + 1));
 
-    list->data[list->count] = malloc(sizeof(char[4]));
+    list->data[list->count] = malloc(sizeof(char[4 + MAX_VALUE_SIZE]));
 
     list->data[list->count][TIME] = data[TIME];
     list->data[list->count][TRANSACTION] = data[TRANSACTION];
     list->data[list->count][OPERATION] = data[OPERATION];
     list->data[list->count][ENTITY] = data[ENTITY];
+    list->data[list->count][VALUE] = data[VALUE];
 
     list->count++;
 }

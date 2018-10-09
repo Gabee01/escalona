@@ -7,7 +7,7 @@
 
 #include <stdlib.h>
 #include <stdio.h>
-#include <stdbool.h>
+//#include <stdbool.h>
 
 typedef struct graph *Graph;
 typedef struct node *Node;
@@ -29,6 +29,7 @@ struct node{
     Node *neighbors;
     int neighborsCount;
     int color;
+    List log;
 } node;
 
 struct graph {

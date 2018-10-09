@@ -1,10 +1,9 @@
-#include <stdbool.h>
 #include "main.h"
 
 int main() {
     int schedulingCount = 0;
 
-    Graph scheduling;
+    Graph scheduling = NULL;
 
     while (scheduling != NULL || schedulingCount == 0){
         schedulingCount ++;
@@ -15,9 +14,11 @@ int main() {
             List instructions = scheduling->instructions;
 
             for (int i = 0; i < instructions->count; i++) {
+                //R(X)
                 if (instructions->data[i][OPERATION] == 'R')
                     checkOperationsAfter(scheduling, 'W', instructions->data[i][TRANSACTION], instructions->data[i][ENTITY],
                                          instructions->data[i][TIME]);//W(X) after R(X)
+                //W(X)
                 if (instructions->data[i][OPERATION] == 'W') {
                     checkOperationsAfter(scheduling, 'R', instructions->data[i][TRANSACTION], instructions->data[i][ENTITY],
                                          instructions->data[i][TIME]);//R(X) after W(X)
@@ -26,22 +27,25 @@ int main() {
                 }
             }
 
-            printf("%d ", schedulingCount);
-            for (int i = 0; i < scheduling->transactionsIds->count; i++)
-                if (i == scheduling->transactionsIds->count - 1)
-                    printf("%u ", scheduling->transactionsIds->data[i]);
-                else
-                    printf("%u,", scheduling->transactionsIds->data[i]);
-
-            if (isAciclic(scheduling))
-                printf("SS ");
-            else
-                printf("NS ");
-
+// - - - - - - - - - - - T1 - - - - - - - - - - -
+//            printf("%d ", schedulingCount);
+//            for (int i = 0; i < scheduling->transactionsIds->count; i++)
+//                if (i == scheduling->transactionsIds->count - 1)
+//                    printf("%u ", scheduling->transactionsIds->data[i]);
+//                else
+//                    printf("%u,", scheduling->transactionsIds->data[i]);
+//
+//            if (isAciclic(scheduling))
+//                printf("SS ");
+//            else
+//                printf("NS ");
+//
             if (hasEquivalent(scheduling))
                 printf("SV\n");
-            else
-                printf("NV\n");
+//            else
+//                printf("NV\n");
+
+// - - - - - - - - - - - T2 - - - - - - - - - - -
 
             free(scheduling);
         }
@@ -116,6 +120,13 @@ bool hasEquivalent(Graph scheduling) {
             if (scheduling->instructions->data[j][TRANSACTION] == scheduling->transactionsIds->data[i])
                 addListData(serialInstructions, scheduling->instructions->data[j]);
 
+    for(int i = 0; i < serialInstructions->count; i++){
+        printf("\n Operation: %c", serialInstructions->data[i][OPERATION]);
+        printf(", Transaction: %d", serialInstructions->data[i][TRANSACTION]);
+        printf(", Entity: %c", serialInstructions->data[i][ENTITY]);
+//        printf(", Value: %d", serialInstructions->data[i][]);
+    }
+
     if (compareByVision(scheduling->instructions, serialInstructions))
         return 1;
 
@@ -171,10 +182,23 @@ Graph readScheduling() {
 
     int time = 0;
     int transaction = 0;
-    while(fscanf(stdin, "%d %d %c %c\n", &time, &transaction, &input[OPERATION], &input[ENTITY]) > 0){
+    int value = 0;
+
+    while(fscanf(stdin, "%d %d %c %c ", &time, &transaction, &input[OPERATION], &input[ENTITY]) > 0){
+        if (input[OPERATION] == 'W'){
+            fscanf(stdin, "%d\n", &value);
+        }
+        else
+            fseek(stdin, 2, SEEK_CUR);
+
+//        printf("\n Operation: %c", input[OPERATION]);
+//        printf(", Transaction: %d", transaction);
+//        printf(", Entity: %c", input[ENTITY]);
+//        printf(", Value: %d", value);
         input[TIME] = (unsigned char) time;
         input[TRANSACTION] = (unsigned char) transaction;
         if (input[OPERATION] == 'C'){
+            printf(" - Commit.");
             addListData(scheduling->instructions, input);
             removeArrayData(scheduling->awaiting, input[TRANSACTION]);
             if (scheduling->awaiting->data == NULL)
@@ -195,7 +219,6 @@ void checkOperationsAfter(Graph scheduling, char findOperation, char transaction
         if (instructions->data[j][OPERATION] == findOperation && instructions->data[j][ENTITY] == entity && instructions->data[j][TRANSACTION] != transaction) //RX em Tj
             addEdges(scheduling, instructions->data[j][TRANSACTION], transaction);
 }
-
 
 void parseInstruction(Graph scheduling, const char *input) {
     char transaction = input[1];

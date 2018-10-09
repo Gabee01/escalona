@@ -2,6 +2,7 @@
 // Created by Gabriel Carraro on 9/10/18.
 //
 
+#include <ecpglib.h>
 #include "graph.h"
 
 #ifndef PROJECT_MAIN_H
@@ -19,4 +20,4 @@ bool compareByVision(List originalScheduling, List serialScheduling);
 int findFirstWrite(List instructions, char entity);
 int findLastWrite(List instructions, char entity);
 
-#endif PROJECT_MAIN_H
+#endif

@@ -15,16 +15,14 @@ stdlib.h
 -
 stdio.h
 -
-stdbool.h
--
 
 /Users/gabrielcarraro/Workspace/topicos-bd/escalona-refact/main.c
-stdbool.h
--
 main.h
 /Users/gabrielcarraro/Workspace/topicos-bd/escalona-refact/main.h
 
 /Users/gabrielcarraro/Workspace/topicos-bd/escalona-refact/main.h
+ecpglib.h
+-
 graph.h
 /Users/gabrielcarraro/Workspace/topicos-bd/escalona-refact/graph.h
 
