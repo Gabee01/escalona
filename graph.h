@@ -11,18 +11,39 @@
 typedef struct graph *Graph;
 typedef struct node *Node;
 typedef struct tLog *Log;
-typedef struct list *List;
-typedef struct array *Array;
+typedef struct instructionsList *InstructionList;
+typedef struct intArray *IntArray;
+typedef struct variable *Variable;
+typedef struct varsArray *VarsArray;
+typedef struct instruction Instruction;
 
-struct array{
-    char *data;
+struct instruction{
+    int time;
+    int transaction;
+    char operation;
+    char entity;
+    int value;
+} instruction;
+
+struct variable{
+    char name;
+    int value;
+} variable;
+
+struct varsArray{
+    Variable *values;
     int count;
-} array;
+} varsArray;
 
-struct list{
-  char **data;
+struct intArray{
+    int *values;
+    int count;
+} intArray;
+
+struct instructionsList{
+  Instruction *values;
   int count;
-} list;
+} instructionsList;
 
 struct tLog{
     char varName;
@@ -31,7 +52,7 @@ struct tLog{
 } tLog;
 
 struct node{
-    char label;
+    int label;
     Node *neighbors;
     int neighborsCount;
     int color;
@@ -41,9 +62,9 @@ struct graph {
     int nodesCount;
     int edgesCount;
     Node *nodes;
-    Array transactionsIds;
-    Array awaiting;
-    List instructions;
+    IntArray transactionsIds;
+    IntArray awaiting;
+    InstructionList instructions;
     Log *logs;
     int logsCount;
 };
@@ -51,21 +72,17 @@ struct graph {
 #define WHITE 0
 #define GRAY 1
 #define BLACK 99
-#define TIME 0
-#define TRANSACTION 1
-#define OPERATION 2
-#define ENTITY 3
-#define VALUE 4
-#define DATASIZE (4 + 12)
 
 Graph initGraph();
-Node newNode(char label);
-Node getNode(Graph scheduling, char label);
+Node newNode(int label);
+Node getNode(Graph scheduling, int label);
 void addNode(Graph pGraph, Node pNode);
-void addArrayData(Array array, char data);
-void removeArrayData(Array array, char data);
-void addListData(List list, const char data[DATASIZE]);
-void addEdges(Graph pGraph, char, char);
+void addInt(IntArray array, int data);
+void addVariable(VarsArray array, Variable data);
+void removeInt(IntArray array, int data);
+void removeVariable(VarsArray varsArray, Variable value);
+void addInstruction(InstructionList instructionList, Instruction instruction);
+void addEdges(Graph pGraph, int, int);
 void newNeighborhood(Node pNode, Node neighbor);
 
 #endif //ESCALONA_REFACT_GRAPH_H

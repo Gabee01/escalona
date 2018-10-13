@@ -1,10 +1,8 @@
 #include "main.h"
 
-Log initLog();
+Variable newVariable(char entity, int value);
 
-void addToLogs(Graph scheduling, char *string);
-
-Log getVarValue(Log *pLog, int, char i);
+int getLastCommitedValue(Log *pLog, int count, char entity);
 
 int main() {
     int schedulingCount = 0;
@@ -17,19 +15,19 @@ int main() {
         scheduling = readScheduling();
 
         if (scheduling != NULL){
-            List instructions = scheduling->instructions;
+            InstructionList instructions = scheduling->instructions;
 
             for (int i = 0; i < instructions->count; i++) {
                 //R(X)
-                if (instructions->data[i][OPERATION] == 'R')
-                    checkOperationsAfter(scheduling, 'W', instructions->data[i][TRANSACTION], instructions->data[i][ENTITY],
-                                         instructions->data[i][TIME]);//W(X) after R(X)
+                if (instructions->values[i].operation == 'R')
+                    checkOperationsAfter(scheduling, 'W', instructions->values[i].transaction, instructions->values[i].entity,
+                                         instructions->values[i].time);//W(X) after R(X)
                 //W(X)
-                if (instructions->data[i][OPERATION] == 'W') {
-                    checkOperationsAfter(scheduling, 'R', instructions->data[i][TRANSACTION], instructions->data[i][ENTITY],
-                                         instructions->data[i][TIME]);//R(X) after W(X)
-                    checkOperationsAfter(scheduling, 'W', instructions->data[i][TRANSACTION], instructions->data[i][ENTITY],
-                                         instructions->data[i][TIME]);//W(X) after W(X)
+                if (instructions->values[i].operation == 'W') {
+                    checkOperationsAfter(scheduling, 'R', instructions->values[i].transaction, instructions->values[i].entity,
+                                         instructions->values[i].time);//R(X) after W(X)
+                    checkOperationsAfter(scheduling, 'W', instructions->values[i].transaction, instructions->values[i].entity,
+                                         instructions->values[i].time);//W(X) after W(X)
                 }
             }
 
@@ -37,9 +35,9 @@ int main() {
 //            printf("%d ", schedulingCount);
 //            for (int i = 0; i < scheduling->transactionsIds->count; i++)
 //                if (i == scheduling->transactionsIds->count - 1)
-//                    printf("%u ", scheduling->transactionsIds->data[i]);
+//                    printf("%u ", scheduling->transactionsIds->values[i]);
 //                else
-//                    printf("%u,", scheduling->transactionsIds->data[i]);
+//                    printf("%u,", scheduling->transactionsIds->values[i]);
 //
 //            if (isAciclic(scheduling))
 //                printf("SS ");
@@ -67,92 +65,102 @@ void logTransactions(Graph scheduling) {
 
 }
 
-bool compareByVision(List originalScheduling, List serialScheduling) {
+Variable newVariable(char entity, int value) {
+    Variable variable = malloc(sizeof(struct variable));
+    variable->name = entity;
+    variable->value = value;
+    return variable;
+}
 
-    Array entities = malloc(sizeof(Array));
-    entities->data = malloc(sizeof(char *));
+bool compareByVision(InstructionList originalScheduling, InstructionList serialScheduling) {
+
+    VarsArray variables = malloc(sizeof(VarsArray));
+    variables->values = malloc(sizeof(char *));
+
+    Variable currentVar = NULL;
 
     //Tests writes order
     for(int i = 0; i < serialScheduling->count; i++){
-        if (serialScheduling->data[i][OPERATION] == 'C')
+        if (serialScheduling->values[i].operation == 'C')
             continue;
-        addArrayData(entities, serialScheduling->data[i][ENTITY]);
 
-        if (serialScheduling->data[i][OPERATION] == 'R'){
-            char currentSerialEntity = serialScheduling->data[i][ENTITY];
+        currentVar = newVariable(serialScheduling->values[i].entity, NULL);
+        addVariable(variables, currentVar);
 
-            char currentOriginalEntity = originalScheduling->data[i][ENTITY];
+        if (serialScheduling->values[i].operation == 'R'){
+            Variable currentSerialVar = newVariable(serialScheduling->values[i].entity, NULL);
 
-            int timeFirstWriteSerial = findFirstWrite(serialScheduling, currentSerialEntity);
-            int timeFirstWriteOriginal = findFirstWrite(originalScheduling, currentOriginalEntity);
+            Variable currentOriginalVar = newVariable(originalScheduling->values[i].entity, NULL);
+
+            int timeFirstWriteSerial = findFirstWrite(serialScheduling, currentSerialVar);
+            int timeFirstWriteOriginal = findFirstWrite(originalScheduling, currentOriginalVar);
 
             if ((timeFirstWriteSerial > 0 && timeFirstWriteOriginal > 0)
-                && originalScheduling->data[timeFirstWriteOriginal][TRANSACTION] != serialScheduling->data[timeFirstWriteSerial][TRANSACTION])
+                && originalScheduling->values[timeFirstWriteOriginal].transaction != serialScheduling->values[timeFirstWriteSerial].transaction)
                 return 0;
         }
     }
 
     // Test last writes for each entity
-    while (entities->count > 0){
-        char currentEntity = entities->data[0];
-        int timeLastWriteSerial = findLastWrite(serialScheduling, currentEntity);
-        int timeLastWriteOriginal = findLastWrite(originalScheduling, currentEntity);
+    while (variables->count > 0){
+        currentVar = variables->values[0];
+        int timeLastWriteSerial = findLastWrite(serialScheduling, currentVar);
+        int timeLastWriteOriginal = findLastWrite(originalScheduling, currentVar);
 
         if ((timeLastWriteOriginal > 0 && timeLastWriteSerial > 0) // if there is a write
-            && serialScheduling->data[timeLastWriteSerial][TRANSACTION] != originalScheduling->data[timeLastWriteOriginal][TRANSACTION]) //and the first writes arent from the same transactions
+            && serialScheduling->values[timeLastWriteSerial].transaction != originalScheduling->values[timeLastWriteOriginal].transaction) //and the first writes arent from the same transactions
             return 0;//
 
-        removeArrayData(entities, currentEntity);
+        removeVariable(variables, currentVar);
     }
 
     return 1;
 }
 
-int findFirstWrite(List instructions, char entity) {
+int findFirstWrite(InstructionList instructions, Variable variable) {
 
     for (int i = 0; i < instructions->count; i++)
-        if (instructions->data[i][ENTITY] == entity && instructions->data[i][OPERATION] == 'W')
+        if (instructions->values[i].entity == variable->name && instructions->values[i].operation == 'W')
             return i;
     return -1;
 }
 
-int findLastWrite(List instructions, char entity) {
+int findLastWrite(InstructionList instructions, Variable variable) {
 
     for (int i = instructions->count -1; i >= 0 ; i--)
-        if (instructions->data[i][ENTITY] == entity && instructions->data[i][OPERATION] == 'W')
+        if (instructions->values[i].entity == variable->name && instructions->values[i].operation == 'W')
             return i;
 
     return -1;
 }
 
-void printInstructions(List serialInstructions) {
+void printInstructions(InstructionList serialInstructions) {
 
     for(int i = 0; i < serialInstructions->count; i++){
-        printf("\n Time: %d", serialInstructions->data[i][TIME]);
-        printf(", Operation: %c", serialInstructions->data[i][OPERATION]);
-        printf(", Transaction: %d", serialInstructions->data[i][TRANSACTION]);
-        printf(", Entity: %c", serialInstructions->data[i][ENTITY]);
-        if (serialInstructions->data[i][VALUE] == NULL)
-            printf(", Value: %d", serialInstructions->data[i][VALUE]);
+        printf("\n Time: %d", serialInstructions->values[i].time);
+        printf(", Operation: %c", serialInstructions->values[i].operation);
+        printf(", Transaction: %d", serialInstructions->values[i].transaction);
+        printf(", Entity: %c", serialInstructions->values[i].entity);
+        printf(", Value: %d", serialInstructions->values[i].value);
     }
 
 }
 
-List serializeInstructions(Graph scheduling) {
-    List serialInstructions = malloc(sizeof(List));
-    serialInstructions->data = malloc(sizeof(char **));
+InstructionList serializeInstructions(Graph scheduling) {
+    InstructionList serialInstructions = malloc(sizeof(InstructionList));
+    serialInstructions->values = malloc(sizeof(char **));
     serialInstructions->count = 0;
     for(int i = 0; i < scheduling->transactionsIds->count; i++)
         // group instructions from same transaction
         for (int j = 0; j < scheduling->instructions->count; j++)
-            if (scheduling->instructions->data[j][TRANSACTION] == scheduling->transactionsIds->data[i])
-                addListData(serialInstructions, scheduling->instructions->data[j]);
+            if (scheduling->instructions->values[j].transaction == scheduling->transactionsIds->values[i])
+                addInstruction(serialInstructions, scheduling->instructions->values[j]);
 
     return serialInstructions;
 }
 bool hasEquivalent(Graph scheduling) {
 
-    List serialInstructions = serializeInstructions(scheduling);
+    InstructionList serialInstructions = serializeInstructions(scheduling);
 
 //    printInstructions(serialInstructions);
 
@@ -205,32 +213,29 @@ bool aciclicTerritory(Node pNode) {
 }
 
 Graph readScheduling() {
-    char input[DATASIZE];
+    Instruction input;
 
     Graph scheduling = initGraph();
 
-    int time = 0;
-    int transaction = 0;
-    int value = 0;
-
-    while(fscanf(stdin, "%d %d %c %c ", &time, &transaction, &input[OPERATION], &input[ENTITY]) > 0){
-        if (input[OPERATION] == 'W'){
-            fscanf(stdin, "%d\n", &value);
-            sprintf(input[VALUE], "%d", value);
-            printf("\nvalue read: %d", input[VALUE]);
+    while(fscanf(stdin, "%d %d %c %c ", &input.time, &input.transaction, &input.operation, &input.entity) > 0){
+        if (input.operation == 'W'){
+            fscanf(stdin, "%d\n", &input.value);
+            printf("\nvalue read: %d", input.value);
         }
         else{
             fseek(stdin, 2, SEEK_CUR);
-            input[VALUE] = NULL;
+            input.value = 0;
         }
 
-        input[TIME] = (unsigned char) time;
-        input[TRANSACTION] = (unsigned char) transaction;
-
-        if (input[OPERATION] == 'C'){
-            addListData(scheduling->instructions, input);
-            removeArrayData(scheduling->awaiting, input[TRANSACTION]);
-            if (scheduling->awaiting->data == NULL)
+        if (input.operation == 'A'){
+            removeInt(scheduling->awaiting, input.transaction);
+            if (scheduling->awaiting->values == NULL)
+                return scheduling;
+        }
+        if (input.operation == 'C'){
+            addInstruction(scheduling->instructions, input);
+            removeInt(scheduling->awaiting, input.transaction);
+            if (scheduling->awaiting->values == NULL)
                 return scheduling;
         }
         else{
@@ -242,51 +247,38 @@ Graph readScheduling() {
 
 void updateVariables(Graph scheduling) {
 
-    List serialInstructions = serializeInstructions(scheduling);
-    int commitedTransaction = serialInstructions->data[0][TRANSACTION];
+    InstructionList serialInstructions = serializeInstructions(scheduling);
+    int commitedTransaction = serialInstructions->values[0].transaction;
     int numOfTransactions = scheduling->nodesCount;
 
     printInstructions(serialInstructions);
 
-    if (scheduling->logs == NULL)
-            scheduling->logs = initLog();
-
-    //for each commited transaction
+//    for each commited transaction
     for(int currentTransacion = commitedTransaction; currentTransacion < numOfTransactions; currentTransacion++){
-//        1;T1;start
+        puts("New transaction");
         for (int currentInstruction = 0; currentInstruction < serialInstructions->count; currentInstruction++){
-            addToLogs(scheduling, serialInstructions->data[currentInstruction]);
-//                int instructionTime = serialInstructions->data[currentInstruction][TIME];
-//                printf("\n%d;T%d;start", instructionTime, currentTransacion);
+            addToLogs(scheduling, serialInstructions->values[currentInstruction]);
+            int instructionTime = serialInstructions->values[currentInstruction].time;
+            printf("\n%d;T%d;start", instructionTime, currentTransacion);
         }
     }
 }
-void addToLogs(Graph scheduling, char *instruction) {
+void addToLogs(Graph scheduling, Instruction instruction) {
+    scheduling->logs = realloc(scheduling->logs, sizeof(struct tLog) * scheduling->logsCount + 1);
+
+    scheduling->logs[scheduling->logsCount] = initLog();
+
     Log log = scheduling->logs[scheduling->logsCount];
 
-    if (log == NULL)
-        log = malloc(sizeof(struct tLog));
-    else
-        log = realloc(log, sizeof(struct tLog) * scheduling->logsCount + 1);
+    log->initialValue = getLastCommitedValue(scheduling->logs, scheduling->logsCount, instruction.entity);
 
-//    log->initialValue = getVarValue(scheduling->logs, scheduling->logsCount, instruction[ENTITY]);
-
-    log->varName = instruction[ENTITY];
+    log->varName = instruction.entity;
 
     scheduling->logsCount++;
 }
 
-Log getVarValue(Log *currentLogs, int logSize, char i) {
-    Log varLog = initLog();
-    for(int j = 0; j < logSize; j++){
-        if (currentLogs[i]->varName == i){
-            if (varLog->initialValue == NULL)
-                varLog->initialValue = currentLogs[i]->initialValue;
-            varLog->newValue = currentLogs[i]->newValue;
-        }
-    }
-
-    return varLog;
+int getLastCommitedValue(Log *pLog, int count, char entity) {
+    return 0;
 }
 
 Log initLog() {
@@ -296,24 +288,24 @@ Log initLog() {
     log->varName = NULL;
 }
 
-void checkOperationsAfter(Graph scheduling, char findOperation, char transaction, char entity, char time) {
-    List instructions = scheduling->instructions;
+void checkOperationsAfter(Graph scheduling, char findOperation, int transaction, char entity, int time) {
+    InstructionList instructions = scheduling->instructions;
 
     for (int j = time + 1; j < instructions->count; j++)
-        if (instructions->data[j][OPERATION] == findOperation && instructions->data[j][ENTITY] == entity && instructions->data[j][TRANSACTION] != transaction) //RX em Tj
-            addEdges(scheduling, instructions->data[j][TRANSACTION], transaction);
+        if (instructions->values[j].operation == findOperation && instructions->values[j].entity == entity && instructions->values[j].transaction != transaction) //RX em Tj
+            addEdges(scheduling, instructions->values[j].transaction, transaction);
 }
 
-void parseInstruction(Graph scheduling, char *input) {
-    char transaction = input[TRANSACTION];
+void parseInstruction(Graph scheduling, Instruction input) {
+    int transaction = input.transaction;
 
     Node transaction_node = getNode(scheduling, transaction);
 
     if (transaction_node == NULL){
-        transaction_node = newNode(input[TRANSACTION]);
+        transaction_node = newNode(input.transaction);
         addNode(scheduling, transaction_node);
     }
 
-    addListData(scheduling->instructions, input);
+    addInstruction(scheduling->instructions, input);
 //    addToLogs(scheduling, input, value);
 }

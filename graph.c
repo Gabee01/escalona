@@ -10,24 +10,26 @@ Graph initGraph() {
     g->nodesCount = 0;
 
     g->nodes = malloc(sizeof(Node));
-    g->transactionsIds = malloc(sizeof(Array));
-    g->transactionsIds->data = malloc(sizeof(char *));
+    g->transactionsIds = malloc(sizeof(IntArray));
+    g->transactionsIds->values = malloc(sizeof(int *));
     g->transactionsIds->count = 0;
 
-    g->awaiting = malloc(sizeof(Array));
-    g->awaiting->data = malloc(sizeof(char *));
+    g->awaiting = malloc(sizeof(IntArray));
+    g->awaiting->values = malloc(sizeof(int *));
     g->awaiting->count = 0;
 
-    g->instructions = malloc(sizeof(List));
-    g->instructions->data = malloc(sizeof(char **));
+    g->instructions = malloc(sizeof(InstructionList));
+    g->instructions->values = malloc(sizeof(char **));
     g->instructions->count = 0;
+
+    g->logs = malloc(sizeof(Log));
 
     g->nodes = NULL;
 
     return g;
 }
 
-Node newNode(const char label) {
+Node newNode(int label) {
     Node node = malloc(sizeof(struct node));
     node->label = label; // Label = transaction id
     node->neighbors = malloc(sizeof(Node));
@@ -46,15 +48,15 @@ void addNode(Graph pGraph, Node pNode){
     pGraph->nodes[pGraph->nodesCount]->color = pNode->color;
     pGraph->nodes[pGraph->nodesCount]->label = pNode->label;
 
-    addArrayData(pGraph->transactionsIds, pNode->label);
-    addArrayData(pGraph->awaiting, pNode->label);
+    addInt(pGraph->transactionsIds, pNode->label);
+    addInt(pGraph->awaiting, pNode->label);
 
     pGraph->nodesCount++;
 }
 
-Node getNode(Graph scheduling, char label) {
+Node getNode(Graph scheduling, int label) {
     for (int i = 0; i < scheduling->nodesCount; i++)
-        if (scheduling->transactionsIds->data[i] == label)
+        if (scheduling->transactionsIds->values[i] == label)
             return scheduling->nodes[i];
 
     return NULL;
@@ -67,7 +69,7 @@ void newNeighborhood(Node pNode, Node neighbor) {
     pNode->neighborsCount = pNode->neighborsCount + 1;
 }
 
-void addEdges(Graph pGraph, char src, char dst) {
+void addEdges(Graph pGraph, int src, int dst) {
     Node nodeSrc = getNode(pGraph, src);
     Node nodeDst = getNode(pGraph, dst);
 
@@ -75,41 +77,65 @@ void addEdges(Graph pGraph, char src, char dst) {
     pGraph->edgesCount++;
 }
 
-void addArrayData(Array array, char data) {
-    //if have data, see if already exists
+void addInt(IntArray array, int data) {
+    //if have values, see if already exists
     if (array->count > 0)
         for (int i = 0; i < array->count; i++)
-            if (array->data[i] == data)
+            if (array->values[i] == data)
                 return;
 
-    array->data = (char *) realloc(array->data, (sizeof(char) * (array->count + 1)));
-    array->data[array->count] = data;
+    array->values = (int *) realloc(array->values, (sizeof(int) * (array->count + 1)));
+    array->values[array->count] = data;
     array->count++;
 }
 
-void addListData(List list, const char data[DATASIZE]) {
-    list->data = (char **) realloc(list->data, (sizeof(char *) * list->count + 1));
+void addVariable(VarsArray array, Variable data) {
+    //if have values, see if already exists
+    if (array->count > 0)
+        for (int i = 0; i < array->count; i++)
+            if (array->values[i] == data)
+                return;
 
-    list->data[list->count] = malloc(sizeof(char[DATASIZE]));
-
-    list->data[list->count][TIME] = data[TIME];
-    list->data[list->count][TRANSACTION] = data[TRANSACTION];
-    list->data[list->count][OPERATION] = data[OPERATION];
-    list->data[list->count][ENTITY] = data[ENTITY];
-    list->data[list->count][VALUE] = data[VALUE];
-
-    list->count++;
+    array->values= realloc(array->values, (sizeof(struct variable) * (array->count + 1)));
+    array->values[array->count] = data;
+    array->count++;
 }
 
-void removeArrayData(Array array, char data) {
+
+void addInstruction(InstructionList instructionList, Instruction input) {
+    instructionList->values = (Instruction *) realloc(instructionList->values, (sizeof(struct instruction) * instructionList->count + 1));
+
+    instructionList->values[instructionList->count].time = input.time;
+    instructionList->values[instructionList->count].transaction = input.transaction;
+    instructionList->values[instructionList->count].operation = input.operation;
+    instructionList->values[instructionList->count].entity = input.entity;
+    instructionList->values[instructionList->count].value = input.value;
+
+    instructionList->count++;
+}
+
+void removeVariable(VarsArray varsArray, Variable value) {
+    for (int i = 0; i < varsArray->count; i++){
+        if (varsArray->values[i] == value){
+            varsArray->values[i] = varsArray->values[varsArray->count - 1];
+            varsArray->count--;
+            if (varsArray->count == 0)
+                varsArray->values = NULL;
+            else
+                varsArray->values = realloc(varsArray->values, (sizeof(char) * varsArray->count));
+        }
+    }
+}
+
+void removeInt(IntArray array, int value) {
     for (int i = 0; i < array->count; i++){
-        if (array->data[i] == data){
-            array->data[i] = array->data[array->count - 1];
+        if (array->values[i] == value){
+            array->values[i] = array->values[array->count - 1];
             array->count--;
             if (array->count == 0)
-                array->data = NULL;
+                array->values = NULL;
             else
-                array->data = realloc(array->data, (sizeof(char) * array->count));
+                array->values = realloc(array->values, (sizeof(char) * array->count));
         }
     }
 }
