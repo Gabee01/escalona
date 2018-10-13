@@ -1,7 +1,6 @@
 //
 // Created by Gabriel Carraro on 9/10/18.
 //
-
 #include "graph.h"
 
 Graph initGraph() {
@@ -34,7 +33,6 @@ Node newNode(const char label) {
     node->neighbors = malloc(sizeof(Node));
     node->neighborsCount = 0;
     node->color = WHITE;
-    node->log = malloc(sizeof(List));
 
     return node;
 }
@@ -89,10 +87,10 @@ void addArrayData(Array array, char data) {
     array->count++;
 }
 
-void addListData(List list, const char data[4 + MAX_VALUE_SIZE]) {
+void addListData(List list, const char data[DATASIZE]) {
     list->data = (char **) realloc(list->data, (sizeof(char *) * list->count + 1));
 
-    list->data[list->count] = malloc(sizeof(char[4 + MAX_VALUE_SIZE]));
+    list->data[list->count] = malloc(sizeof(char[DATASIZE]));
 
     list->data[list->count][TIME] = data[TIME];
     list->data[list->count][TRANSACTION] = data[TRANSACTION];

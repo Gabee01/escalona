@@ -9,7 +9,7 @@
 #define PROJECT_MAIN_H
 
 Graph readScheduling();
-void parseInstruction(Graph scheduling, const char *input);
+void parseInstruction(Graph scheduling, char *input);
 //adds an edge every time it finds a last operation on the same entity as the first operation
 void checkOperationsAfter(Graph scheduling, char findOperation, char entity, char time, char i);
 bool isAciclic(Graph pGraph);
@@ -20,4 +20,11 @@ bool compareByVision(List originalScheduling, List serialScheduling);
 int findFirstWrite(List instructions, char entity);
 int findLastWrite(List instructions, char entity);
 
-#endif
+
+//T2
+void printInstructions(List pList);
+List serializeInstructions(Graph scheduling);
+void logTransactions(Graph pGraph);
+void updateVariables(Graph pGraph);
+
+#endif //PROJECT_MAIN_H

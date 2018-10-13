@@ -7,10 +7,10 @@
 
 #include <stdlib.h>
 #include <stdio.h>
-//#include <stdbool.h>
 
 typedef struct graph *Graph;
 typedef struct node *Node;
+typedef struct tLog *Log;
 typedef struct list *List;
 typedef struct array *Array;
 
@@ -24,12 +24,17 @@ struct list{
   int count;
 } list;
 
+struct tLog{
+    char varName;
+    int initialValue;
+    int newValue;
+} tLog;
+
 struct node{
     char label;
     Node *neighbors;
     int neighborsCount;
     int color;
-    List log;
 } node;
 
 struct graph {
@@ -39,6 +44,8 @@ struct graph {
     Array transactionsIds;
     Array awaiting;
     List instructions;
+    Log *logs;
+    int logsCount;
 };
 
 #define WHITE 0
@@ -48,6 +55,8 @@ struct graph {
 #define TRANSACTION 1
 #define OPERATION 2
 #define ENTITY 3
+#define VALUE 4
+#define DATASIZE (4 + 12)
 
 Graph initGraph();
 Node newNode(char label);
@@ -55,7 +64,7 @@ Node getNode(Graph scheduling, char label);
 void addNode(Graph pGraph, Node pNode);
 void addArrayData(Array array, char data);
 void removeArrayData(Array array, char data);
-void addListData(List list, const char data[4]);
+void addListData(List list, const char data[DATASIZE]);
 void addEdges(Graph pGraph, char, char);
 void newNeighborhood(Node pNode, Node neighbor);
 
