@@ -1,9 +1,9 @@
-# Escalonamento de transações
-
 ## Universidade Federal do Paraná (UFPR).
 ### Aluno: Gabriel Alcides Carraro
 ### Professor: Eduardo Cunha de Almeida.
 ### Disciplina: Banco de dados/Tópicos em bancos de dados.
+
+# Escalonamento de transações
 
 Nesse trabalho foram implementados dois algoritmos que decidem se duas transações podem ser executadas paralelamente.
 As transações são lidas até que todas elas sejam commitadas. Quando esse evento aconte, um escalonamento novo e gerado para essas transações e analisado pelos dois algoritmos.
@@ -38,3 +38,25 @@ Responsável por iterar e tentar as combinações das ordens das transação (fu
 Onde as listas de transações são analisadas para sabermos se obedecem as regras exigidas.
 
 [nesse material sobre ciclos em grafos]:https://www.ime.usp.br/~pf/analise_de_algoritmos/aulas/cycles-and-dags.html
+
+# Log de transações
+
+Nessa segunda parte do trabalho, foram implementados logs para as transações sendo processadas.
+
+Para que o código ficasse bem dividido, os métodos criados para essa segunda parte foram implementados no arquivo logs.c (com cabeçalho em logs.h), porém também foram feitas alterações melhorando o código entregue no primeiro trabalho.
+
+O arquivo que antes se chamava grafo.c(.h) agora se chama dataStructures, visto que possui a implementação de várias estruturas de dados.
+
+As instruções, que antes era tratada como um vetor, agora são armazenadas em uma estutura a parte.
+
+Os logs seguem as regras da especificação, com 4 tipos de comandos:
+
+1. < TS; Ti; start >
+1. < TS; Ti; commit >
+1. < TS; Ti; abort >
+1. < TS; Ti; Xj; V1; V2 >
+
+Transações que não fazem escrita não aparecem no log;
+Os valores finais das variáveis não estão sendo salvos em nenhum lugar. Imagino que isso será utilizado para a parte de recuperação de dados, e é facilmente implementável na estrutura que possuo hoje, não a implementei pois fiquei em dúvida como ficaria a saída nesse caso.
+
+Acho que é isso. Sem muitos detalhes para essa segunda parte.
