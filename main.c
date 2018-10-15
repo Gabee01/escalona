@@ -1,32 +1,38 @@
+#include <ecpglib.h>
 #include "main.h"
+#include "graph.h"
 
-Variable newVariable(char entity, int value);
+LogsList initLogs();
 
-int getLastCommitedValue(Log *pLog, int count, char entity);
+int isReadOnly(LogsList pList, int transaction);
+
+bool hasValue(LogsList logs, char name);
+
+int getInitialValue(LogsList pList, Instruction instruction);
 
 int main() {
     int schedulingCount = 0;
 
     Graph scheduling = NULL;
-
+    LogsList transactionsLogs = initLogs();
     while (scheduling != NULL || schedulingCount == 0){
         schedulingCount ++;
 
         scheduling = readScheduling();
 
         if (scheduling != NULL){
-            InstructionList instructions = scheduling->instructions;
+            InstructionsList instructions = scheduling->instructions;
 
             for (int i = 0; i < instructions->count; i++) {
                 //R(X)
                 if (instructions->values[i].operation == 'R')
-                    checkOperationsAfter(scheduling, 'W', instructions->values[i].transaction, instructions->values[i].entity,
+                    checkOperationsAfter(scheduling, 'W', instructions->values[i].transaction, instructions->values[i].varName,
                                          instructions->values[i].time);//W(X) after R(X)
                 //W(X)
                 if (instructions->values[i].operation == 'W') {
-                    checkOperationsAfter(scheduling, 'R', instructions->values[i].transaction, instructions->values[i].entity,
+                    checkOperationsAfter(scheduling, 'R', instructions->values[i].transaction, instructions->values[i].varName,
                                          instructions->values[i].time);//R(X) after W(X)
-                    checkOperationsAfter(scheduling, 'W', instructions->values[i].transaction, instructions->values[i].entity,
+                    checkOperationsAfter(scheduling, 'W', instructions->values[i].transaction, instructions->values[i].varName,
                                          instructions->values[i].time);//W(X) after W(X)
                 }
             }
@@ -51,18 +57,182 @@ int main() {
 
 // - - - - - - - - - - - T2 - - - - - - - - - - -
 
-            logTransactions(scheduling);
+            logTransactions(scheduling, transactionsLogs);
             free(scheduling);
+        }
+    }
+    printLogs(transactionsLogs);
+}
+
+LogsList initLogs() {
+    LogsList logs;
+
+    logs = malloc(sizeof(LogsList));
+    logs->values = NULL;
+    logs->count = 0;
+
+    return logs;
+}
+
+void logTransactions(Graph scheduling, LogsList logs) {
+    InstructionsList serialInstructions = serializeInstructions(scheduling);
+    int committedTransaction = serialInstructions->values[0].transaction;
+    int lastTransaction = committedTransaction + scheduling->nodesCount;
+
+//    printInstructions(serialInstructions);
+    int instructionIndex = 0;
+//    for each committed transaction
+    for(int currentTransaction = committedTransaction; currentTransaction < lastTransaction; currentTransaction++){
+        addStartLog(logs, serialInstructions->values[instructionIndex]);
+
+        while (serialInstructions->values[instructionIndex].transaction == currentTransaction){
+            generateLog(logs, serialInstructions->values[instructionIndex]);
+            instructionIndex++;
         }
     }
 }
 
-void logTransactions(Graph scheduling) {
+void addStartLog(LogsList logs, Instruction instruction) {
+    int lastLogTime = getLogTime(logs,instruction);
+    Log log = malloc(sizeof(struct tLog));
+    log->transaction = instruction.transaction;
+    log->time = lastLogTime;
+    log->action = ACTION_START;
 
-    updateVariables(scheduling);
+    addLog(logs, log);
+}
 
+void printLogs(LogsList logs) {
+    if (logs == NULL)
+        return;
 
+    Log currentLog;
+    for(int i = 0; i <= logs->count; i++){
+        currentLog = logs->values[i];
+        if (i > 0)
+            printf("\n");
+        printf("%d;T%d;",currentLog->time, currentLog->transaction);
+        switch(currentLog->action){
+            case ACTION_START:
+                printf("start");
+                break;
+            case ACTION_ABORT:
+                printf("abort");
+                break;
+            case ACTION_COMMIT:
+                printf("commit");
+                break;
+            case ACTION_CHANGEVAR:
+                printf("%c;", currentLog->varName);
+                if (currentLog->initialValue == NULL)
+                    printf("NULL;");
+                else
+                    printf("%d;", currentLog->initialValue);
+                printf("%d", currentLog->newValue);
+            default:
+                break;
+        }
+    }
+}
 
+void generateLog(LogsList logs, Instruction instruction){
+    if (instruction.operation == 'R')
+        return;
+
+    int lastLogTime = getLogTime(logs, instruction);
+
+    Log log = malloc(sizeof(struct tLog));
+    log->transaction = instruction.transaction;
+    log->time = lastLogTime;
+
+    switch (instruction.operation){
+        case 'W':
+            log->action = ACTION_CHANGEVAR;
+            log->varName = instruction.varName;
+            log->newValue = instruction.value;
+            log->initialValue = getInitialValue(logs, instruction);
+//            printf("\nVar name: %c", log->varName);
+            break;
+        case 'C':
+            log->action = ACTION_COMMIT;
+            break;
+        case 'A':
+            log->action = ACTION_ABORT;
+            break;
+        default:
+            break;
+    }
+
+    addLog(logs, log);
+}
+
+int getInitialValue(LogsList logs, Instruction instruction) {
+    Log currentLog;
+    int valueBeforeTransaction = NULL;
+
+    for (int i = 0; i <= logs->count; i++){
+        currentLog = logs->values[i];
+        if (currentLog->transaction == instruction.transaction)
+            return valueBeforeTransaction;
+
+        if (currentLog->action == ACTION_CHANGEVAR && currentLog->varName == instruction.varName)
+            valueBeforeTransaction = currentLog->newValue;
+    }
+
+    return valueBeforeTransaction;
+}
+
+int getLogTime(LogsList logs, Instruction instruction) {
+    int lastLogTime;
+    if(logs->values == NULL){
+        return 1;
+    }
+
+    lastLogTime = logs->values[logs->count]->time;
+
+    if (lastLogTime > instruction.time)
+        return lastLogTime + 1;
+    else
+        return instruction.time;
+
+}
+
+void addLog(LogsList logs, Log log) {
+    if (logs->values == NULL){
+        logs->count = 0;
+        logs->values = malloc(sizeof(struct tLog *));
+    }
+    else{
+        if(log->action == ACTION_COMMIT && isReadOnly(logs, log->transaction)){
+            logs->count--;
+            return;
+        }
+        else{
+            logs->count++;
+            logs->values = realloc(logs->values, sizeof(struct tLog *) * logs->count + 1);
+        }
+    }
+    logs->values[logs->count] = malloc(sizeof(struct tLog));
+
+    Log newLog = logs->values[logs->count];
+
+    newLog->time = log->time;
+    newLog->action = log->action;
+    newLog->transaction = log->transaction;
+    newLog->varName = log->varName;
+    newLog->initialValue = log->initialValue;
+    newLog->newValue = log->newValue;
+}
+
+int isReadOnly(LogsList logs, int transaction) {
+    Log currentLog;
+    for (int i = 0; i <= logs->count; i++){
+        currentLog =logs->values[i];
+        if (currentLog->transaction == transaction && currentLog->action == ACTION_CHANGEVAR)
+            return 0;
+    }
+
+    return 1;
 }
 
 Variable newVariable(char entity, int value) {
@@ -72,7 +242,7 @@ Variable newVariable(char entity, int value) {
     return variable;
 }
 
-bool compareByVision(InstructionList originalScheduling, InstructionList serialScheduling) {
+int compareByVision(InstructionsList originalScheduling, InstructionsList serialScheduling) {
 
     VarsArray variables = malloc(sizeof(VarsArray));
     variables->values = malloc(sizeof(char *));
@@ -84,13 +254,13 @@ bool compareByVision(InstructionList originalScheduling, InstructionList serialS
         if (serialScheduling->values[i].operation == 'C')
             continue;
 
-        currentVar = newVariable(serialScheduling->values[i].entity, NULL);
-        addVariable(variables, currentVar);
+        currentVar = newVariable(serialScheduling->values[i].varName, 0);
+        addOrUpdateVariable(variables, currentVar, 0);
 
         if (serialScheduling->values[i].operation == 'R'){
-            Variable currentSerialVar = newVariable(serialScheduling->values[i].entity, NULL);
+            Variable currentSerialVar = newVariable(serialScheduling->values[i].varName, 0);
 
-            Variable currentOriginalVar = newVariable(originalScheduling->values[i].entity, NULL);
+            Variable currentOriginalVar = newVariable(originalScheduling->values[i].varName, 0);
 
             int timeFirstWriteSerial = findFirstWrite(serialScheduling, currentSerialVar);
             int timeFirstWriteOriginal = findFirstWrite(originalScheduling, currentOriginalVar);
@@ -101,7 +271,7 @@ bool compareByVision(InstructionList originalScheduling, InstructionList serialS
         }
     }
 
-    // Test last writes for each entity
+    // Test last writes for each varName
     while (variables->count > 0){
         currentVar = variables->values[0];
         int timeLastWriteSerial = findLastWrite(serialScheduling, currentVar);
@@ -117,37 +287,39 @@ bool compareByVision(InstructionList originalScheduling, InstructionList serialS
     return 1;
 }
 
-int findFirstWrite(InstructionList instructions, Variable variable) {
+int findFirstWrite(InstructionsList instructions, Variable variable) {
 
     for (int i = 0; i < instructions->count; i++)
-        if (instructions->values[i].entity == variable->name && instructions->values[i].operation == 'W')
+        if (instructions->values[i].varName == variable->name && instructions->values[i].operation == 'W')
             return i;
     return -1;
 }
 
-int findLastWrite(InstructionList instructions, Variable variable) {
+int findLastWrite(InstructionsList instructions, Variable variable) {
 
     for (int i = instructions->count -1; i >= 0 ; i--)
-        if (instructions->values[i].entity == variable->name && instructions->values[i].operation == 'W')
+        if (instructions->values[i].varName == variable->name && instructions->values[i].operation == 'W')
             return i;
 
     return -1;
 }
 
-void printInstructions(InstructionList serialInstructions) {
-
-    for(int i = 0; i < serialInstructions->count; i++){
-        printf("\n Time: %d", serialInstructions->values[i].time);
-        printf(", Operation: %c", serialInstructions->values[i].operation);
-        printf(", Transaction: %d", serialInstructions->values[i].transaction);
-        printf(", Entity: %c", serialInstructions->values[i].entity);
-        printf(", Value: %d", serialInstructions->values[i].value);
-    }
-
+void printInstruction(Instruction instruction){
+    printf("\n Time: %d", instruction.time);
+    printf(", Operation: %c", instruction.operation);
+    printf(", Transaction: %d", instruction.transaction);
+    printf(", Entity: %c", instruction.varName);
+    if (instruction.operation == 'W')
+        printf(", Value: %d", instruction.value);
 }
 
-InstructionList serializeInstructions(Graph scheduling) {
-    InstructionList serialInstructions = malloc(sizeof(InstructionList));
+void printInstructions(InstructionsList serialInstructions) {
+    for(int i = 0; i < serialInstructions->count; i++)
+        printInstruction(serialInstructions->values[i]);
+}
+
+InstructionsList serializeInstructions(Graph scheduling) {
+    InstructionsList serialInstructions = malloc(sizeof(InstructionsList));
     serialInstructions->values = malloc(sizeof(char **));
     serialInstructions->count = 0;
     for(int i = 0; i < scheduling->transactionsIds->count; i++)
@@ -158,9 +330,8 @@ InstructionList serializeInstructions(Graph scheduling) {
 
     return serialInstructions;
 }
-bool hasEquivalent(Graph scheduling) {
-
-    InstructionList serialInstructions = serializeInstructions(scheduling);
+int hasEquivalent(Graph scheduling) {
+    InstructionsList serialInstructions = serializeInstructions(scheduling);
 
 //    printInstructions(serialInstructions);
 
@@ -178,7 +349,7 @@ bool hasEquivalent(Graph scheduling) {
 //    5         então  x ← Terr-Acicl (r)
 //    6             se  x = 0  então devolva  0  e pare
 //    7 devolva  1
-bool isAciclic(Graph pGraph) {
+int isAciclic(Graph pGraph) {
     for (int i = 0; i < pGraph->nodesCount; i++)
         pGraph->nodes[i]->color = WHITE;
     for (int i = 0; i < pGraph->nodesCount; i++)
@@ -198,7 +369,7 @@ bool isAciclic(Graph pGraph) {
 //7             se  x = 0  então  devolva  0  e pare
 //8  cor[u] ← preto
 //9  devolva   1
-bool aciclicTerritory(Node pNode) {
+int aciclicTerritory(Node pNode) {
 
     pNode->color = GRAY;
     for (int i = 0; i < pNode->neighborsCount; i++){
@@ -217,10 +388,9 @@ Graph readScheduling() {
 
     Graph scheduling = initGraph();
 
-    while(fscanf(stdin, "%d %d %c %c ", &input.time, &input.transaction, &input.operation, &input.entity) > 0){
+    while(fscanf(stdin, "%d %d %c %c ", &input.time, &input.transaction, &input.operation, &input.varName) > 0){
         if (input.operation == 'W'){
             fscanf(stdin, "%d\n", &input.value);
-            printf("\nvalue read: %d", input.value);
         }
         else{
             fseek(stdin, 2, SEEK_CUR);
@@ -228,6 +398,7 @@ Graph readScheduling() {
         }
 
         if (input.operation == 'A'){
+            addInstruction(scheduling->instructions, input);
             removeInt(scheduling->awaiting, input.transaction);
             if (scheduling->awaiting->values == NULL)
                 return scheduling;
@@ -245,54 +416,11 @@ Graph readScheduling() {
     return NULL;
 }
 
-void updateVariables(Graph scheduling) {
-
-    InstructionList serialInstructions = serializeInstructions(scheduling);
-    int commitedTransaction = serialInstructions->values[0].transaction;
-    int numOfTransactions = scheduling->nodesCount;
-
-    printInstructions(serialInstructions);
-
-//    for each commited transaction
-    for(int currentTransacion = commitedTransaction; currentTransacion < numOfTransactions; currentTransacion++){
-        puts("New transaction");
-        for (int currentInstruction = 0; currentInstruction < serialInstructions->count; currentInstruction++){
-            addToLogs(scheduling, serialInstructions->values[currentInstruction]);
-            int instructionTime = serialInstructions->values[currentInstruction].time;
-            printf("\n%d;T%d;start", instructionTime, currentTransacion);
-        }
-    }
-}
-void addToLogs(Graph scheduling, Instruction instruction) {
-    scheduling->logs = realloc(scheduling->logs, sizeof(struct tLog) * scheduling->logsCount + 1);
-
-    scheduling->logs[scheduling->logsCount] = initLog();
-
-    Log log = scheduling->logs[scheduling->logsCount];
-
-    log->initialValue = getLastCommitedValue(scheduling->logs, scheduling->logsCount, instruction.entity);
-
-    log->varName = instruction.entity;
-
-    scheduling->logsCount++;
-}
-
-int getLastCommitedValue(Log *pLog, int count, char entity) {
-    return 0;
-}
-
-Log initLog() {
-    Log log = malloc(sizeof(struct tLog));
-    log->initialValue = NULL;
-    log->newValue = NULL;
-    log->varName = NULL;
-}
-
 void checkOperationsAfter(Graph scheduling, char findOperation, int transaction, char entity, int time) {
-    InstructionList instructions = scheduling->instructions;
+    InstructionsList instructions = scheduling->instructions;
 
     for (int j = time + 1; j < instructions->count; j++)
-        if (instructions->values[j].operation == findOperation && instructions->values[j].entity == entity && instructions->values[j].transaction != transaction) //RX em Tj
+        if (instructions->values[j].operation == findOperation && instructions->values[j].varName == entity && instructions->values[j].transaction != transaction) //RX em Tj
             addEdges(scheduling, instructions->values[j].transaction, transaction);
 }
 
@@ -307,5 +435,4 @@ void parseInstruction(Graph scheduling, Instruction input) {
     }
 
     addInstruction(scheduling->instructions, input);
-//    addToLogs(scheduling, input, value);
 }

@@ -11,7 +11,8 @@
 typedef struct graph *Graph;
 typedef struct node *Node;
 typedef struct tLog *Log;
-typedef struct instructionsList *InstructionList;
+typedef struct instructionsList *InstructionsList;
+typedef struct logsList *LogsList;
 typedef struct intArray *IntArray;
 typedef struct variable *Variable;
 typedef struct varsArray *VarsArray;
@@ -21,7 +22,7 @@ struct instruction{
     int time;
     int transaction;
     char operation;
-    char entity;
+    char varName;
     int value;
 } instruction;
 
@@ -31,8 +32,8 @@ struct variable{
 } variable;
 
 struct varsArray{
-    Variable *values;
     int count;
+    Variable *values;
 } varsArray;
 
 struct intArray{
@@ -41,11 +42,19 @@ struct intArray{
 } intArray;
 
 struct instructionsList{
-  Instruction *values;
   int count;
+  Instruction *values;
 } instructionsList;
 
+struct logsList{
+    int count;
+    Log *values;
+} logsList;
+
 struct tLog{
+    int time;
+    int action;
+    int transaction;
     char varName;
     int initialValue;
     int newValue;
@@ -53,9 +62,9 @@ struct tLog{
 
 struct node{
     int label;
-    Node *neighbors;
     int neighborsCount;
     int color;
+    Node *neighbors;
 } node;
 
 struct graph {
@@ -64,24 +73,28 @@ struct graph {
     Node *nodes;
     IntArray transactionsIds;
     IntArray awaiting;
-    InstructionList instructions;
-    Log *logs;
-    int logsCount;
+    InstructionsList instructions;
 };
 
 #define WHITE 0
 #define GRAY 1
 #define BLACK 99
 
+#define ACTION_START 77
+#define ACTION_CHANGEVAR 88
+#define ACTION_COMMIT 99
+#define ACTION_ABORT 11
+
+
 Graph initGraph();
 Node newNode(int label);
 Node getNode(Graph scheduling, int label);
 void addNode(Graph pGraph, Node pNode);
 void addInt(IntArray array, int data);
-void addVariable(VarsArray array, Variable data);
+void addOrUpdateVariable(VarsArray array, Variable var, int shouldUpdate);
 void removeInt(IntArray array, int data);
 void removeVariable(VarsArray varsArray, Variable value);
-void addInstruction(InstructionList instructionList, Instruction instruction);
+void addInstruction(InstructionsList instructionList, Instruction instruction);
 void addEdges(Graph pGraph, int, int);
 void newNeighborhood(Node pNode, Node neighbor);
 

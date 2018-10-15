@@ -34,7 +34,7 @@ Após a geração desse escalonamento serial, fazemos um teste para ver se o esc
 Os métodos que participam desse teste, no código são definidos como:
 - bool hasEquivalent(Graph scheduling):
 Responsável por iterar e tentar as combinações das ordens das transação (funciona para duas tratando cada uma como primeira de cada vez).
-- bool compareByVision(InstructionList originalScheduling, InstructionList serialScheduling):
+- bool compareByVision(InstructionsList originalScheduling, InstructionsList serialScheduling):
 Onde as listas de transações são analisadas para sabermos se obedecem as regras exigidas.
 
 [nesse material sobre ciclos em grafos]:https://www.ime.usp.br/~pf/analise_de_algoritmos/aulas/cycles-and-dags.html

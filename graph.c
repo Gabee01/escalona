@@ -1,6 +1,7 @@
 //
 // Created by Gabriel Carraro on 9/10/18.
 //
+#include <ecpglib.h>
 #include "graph.h"
 
 Graph initGraph() {
@@ -9,7 +10,7 @@ Graph initGraph() {
     g->edgesCount = 0;
     g->nodesCount = 0;
 
-    g->nodes = malloc(sizeof(Node));
+//    g->nodes = malloc(sizeof(Node));
     g->transactionsIds = malloc(sizeof(IntArray));
     g->transactionsIds->values = malloc(sizeof(int *));
     g->transactionsIds->count = 0;
@@ -18,14 +19,11 @@ Graph initGraph() {
     g->awaiting->values = malloc(sizeof(int *));
     g->awaiting->count = 0;
 
-    g->instructions = malloc(sizeof(InstructionList));
+    g->instructions = malloc(sizeof(InstructionsList));
     g->instructions->values = malloc(sizeof(char **));
     g->instructions->count = 0;
 
-    g->logs = malloc(sizeof(Log));
-
     g->nodes = NULL;
-
     return g;
 }
 
@@ -89,28 +87,40 @@ void addInt(IntArray array, int data) {
     array->count++;
 }
 
-void addVariable(VarsArray array, Variable data) {
+void addOrUpdateVariable(VarsArray array, Variable var, int shouldUpdate) {
     //if have values, see if already exists
-    if (array->count > 0)
-        for (int i = 0; i < array->count; i++)
-            if (array->values[i] == data)
+    if (array->count > 0 && shouldUpdate){
+        for (int i = 0; i < array->count; i++){
+            if (array->values[i] == var) {
+                array->values[i]->value = var->value;
                 return;
+            }
+        }
+    }
+    if (array->count == 0){
+//        printf("\narray count: %d", array->count);
+        array->values = malloc(sizeof(struct variable *));
+        array->values[array->count] = malloc(sizeof(struct variable));
+    }
+    else{
+        array->count++;
+        array->values[array->count] = realloc(array->values[array->count], (sizeof(struct variable) * (array->count)));
+    }
 
-    array->values= realloc(array->values, (sizeof(struct variable) * (array->count + 1)));
-    array->values[array->count] = data;
-    array->count++;
+    array->values[array->count]->value = var->value;
+    array->values[array->count]->name = var->name;
 }
 
 
-void addInstruction(InstructionList instructionList, Instruction input) {
+void addInstruction(InstructionsList instructionList, Instruction input) {
     instructionList->values = (Instruction *) realloc(instructionList->values, (sizeof(struct instruction) * instructionList->count + 1));
+
 
     instructionList->values[instructionList->count].time = input.time;
     instructionList->values[instructionList->count].transaction = input.transaction;
     instructionList->values[instructionList->count].operation = input.operation;
-    instructionList->values[instructionList->count].entity = input.entity;
+    instructionList->values[instructionList->count].varName = input.varName;
     instructionList->values[instructionList->count].value = input.value;
-
     instructionList->count++;
 }
 

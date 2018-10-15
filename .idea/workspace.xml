@@ -14,6 +14,10 @@
     <list default="true" id="8f42f2df-3e63-46d4-88a7-8ddd0bd14ce4" name="Default" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/escalona_refact.dir/C.includecache" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/escalona_refact.dir/C.includecache" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/escalona_refact.dir/graph.c.o" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/escalona_refact.dir/graph.c.o" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/escalona_refact.dir/main.c.o" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/escalona_refact.dir/main.c.o" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/escalona_refact" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/escalona_refact" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/escalona" beforeDir="false" afterPath="$PROJECT_DIR$/escalona" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/graph.c" beforeDir="false" afterPath="$PROJECT_DIR$/graph.c" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/graph.h" beforeDir="false" afterPath="$PROJECT_DIR$/graph.h" afterDir="false" />
@@ -21,6 +25,7 @@
       <change beforePath="$PROJECT_DIR$/main.c" beforeDir="false" afterPath="$PROJECT_DIR$/main.c" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.h" beforeDir="false" afterPath="$PROJECT_DIR$/main.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.o" beforeDir="false" afterPath="$PROJECT_DIR$/main.o" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/run.sh" beforeDir="false" afterPath="$PROJECT_DIR$/run.sh" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/t2.out" beforeDir="false" afterPath="$PROJECT_DIR$/t2.out" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/cmake-build-debug/" />
@@ -37,8 +42,11 @@
       <file leaf-file-name="graph.c" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/graph.c">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="375">
-              <caret line="25" lean-forward="true" selection-start-line="25" selection-end-line="25" />
+            <state relative-caret-position="191">
+              <caret line="114" column="69" selection-start-line="114" selection-start-column="69" selection-end-line="114" selection-end-column="69" />
+              <folding>
+                <element signature="e#48#68#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -46,8 +54,8 @@
       <file leaf-file-name="graph.h" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/graph.h">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="622">
-              <caret line="67" column="13" selection-start-line="67" selection-start-column="9" selection-end-line="67" selection-end-column="13" />
+            <state relative-caret-position="-157">
+              <caret line="23" column="8" selection-start-line="23" selection-start-column="4" selection-end-line="23" selection-end-column="8" />
               <folding>
                 <element signature="e#114#133#0" expanded="true" />
               </folding>
@@ -58,11 +66,8 @@
       <file leaf-file-name="main.h" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/main.h">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="300">
-              <caret line="20" column="57" selection-start-line="20" selection-start-column="57" selection-end-line="20" selection-end-column="57" />
-              <folding>
-                <element signature="e#49#69#0" expanded="true" />
-              </folding>
+            <state relative-caret-position="-4">
+              <caret line="8" lean-forward="true" selection-start-line="8" selection-end-line="8" />
             </state>
           </provider>
         </entry>
@@ -70,8 +75,11 @@
       <file leaf-file-name="main.c" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/main.c">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="188">
-              <caret line="268" column="56" selection-start-line="268" selection-start-column="56" selection-end-line="268" selection-end-column="56" />
+            <state relative-caret-position="302">
+              <caret line="113" column="15" selection-start-line="113" selection-start-column="15" selection-end-line="113" selection-end-column="15" />
+              <folding>
+                <element signature="e#0#20#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -80,34 +88,36 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>nodesCount</find>
-      <find>nodesco</find>
-      <find>malloc(sizeof(char</find>
-      <find>malloc</find>
-      <find>realloc</find>
-      <find>reall</find>
-      <find>char[4</find>
-      <find>printf(</find>
-      <find>list</find>
-      <find>log</find>
-      <find>instructions</find>
-      <find>[4]</find>
-      <find>input[TRANSACTION]</find>
-      <find>char *input</find>
-      <find>[OPERATION]</find>
-      <find>[ENTITY]</find>
-      <find>[TRANSACTION]</find>
-      <find>[TIME]</find>
-      <find>operation:</find>
-      <find>[VALUE]</find>
-      <find>addto</find>
-      <find>.valeu</find>
-      <find>getVa</find>
-      <find>prin</find>
-      <find>logTra</find>
-      <find>update</find>
-      <find>init</find>
-      <find>pos</find>
+      <find>new</find>
+      <find>here</find>
+      <find>pring</find>
+      <find>instru</find>
+      <find>newL</find>
+      <find>time(</find>
+      <find>parsein</find>
+      <find>time</find>
+      <find>time %d</find>
+      <find>instruction time</find>
+      <find>parseIn</find>
+      <find>se</find>
+      <find>seriali</find>
+      <find>analiz</find>
+      <find>addlog</find>
+      <find>addLog</find>
+      <find>shrin</find>
+      <find>print</find>
+      <find>removef</find>
+      <find>pa</find>
+      <find>parse</find>
+      <find>printL</find>
+      <find>printin</find>
+      <find>printlog</find>
+      <find>ini</find>
+      <find>new val</find>
+      <find>printIns</find>
+      <find>printlo</find>
+      <find>initial val</find>
+      <find>start</find>
     </findStrings>
     <replaceStrings>
       <replace>input.transaction</replace>
@@ -126,18 +136,17 @@
     <option name="CHANGED_PATHS">
       <list>
         <option value="$PROJECT_DIR$/cmake-build-debug/graph.h" />
-        <option value="$PROJECT_DIR$/graph.h" />
         <option value="$PROJECT_DIR$/main.h" />
         <option value="$PROJECT_DIR$/graph.c" />
+        <option value="$PROJECT_DIR$/graph.h" />
         <option value="$PROJECT_DIR$/main.c" />
       </list>
     </option>
   </component>
   <component name="OCFindUsagesOptions" text="false" ivars="false" properties="true" derivedClasses="false" />
   <component name="ProjectFrameBounds" fullScreen="true">
-    <option name="y" value="23" />
     <option name="width" value="1440" />
-    <option name="height" value="877" />
+    <option name="height" value="900" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectView">
@@ -145,7 +154,6 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -157,6 +165,7 @@
           <select />
         </subPane>
       </pane>
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -207,11 +216,12 @@
       <workItem from="1536656148660" duration="11178000" />
       <workItem from="1536683881887" duration="7315000" />
       <workItem from="1539049651495" duration="5001000" />
+      <workItem from="1539470459780" duration="17860000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="65378000" />
+    <option name="totallyTimeSpent" value="90724000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="0" width="1440" height="900" extended-state="0" />
@@ -219,34 +229,22 @@
     <layout>
       <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.14583333" />
       <window_info anchor="bottom" id="TODO" order="6" />
-      <window_info anchor="bottom" id="Messages" order="7" weight="0.32900944" />
       <window_info anchor="bottom" id="CMake" order="7" />
       <window_info anchor="bottom" id="Event Log" order="7" side_tool="true" />
-      <window_info active="true" anchor="bottom" id="Find" order="1" visible="true" weight="0.26650944" />
+      <window_info active="true" anchor="bottom" id="Find" order="1" visible="true" weight="0.32900944" />
       <window_info anchor="bottom" id="Run" order="2" />
       <window_info anchor="bottom" id="Version Control" order="7" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info anchor="bottom" id="Terminal" order="7" weight="0.32900944" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.39976415" />
       <window_info id="Favorites" order="2" side_tool="true" />
-      <window_info anchor="bottom" id="Run" order="2" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.14583333" />
-      <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
-      <window_info anchor="bottom" id="TODO" order="6" />
-      <window_info anchor="bottom" id="Version Control" order="7" />
-      <window_info anchor="bottom" id="CMake" order="7" />
-      <window_info anchor="bottom" id="Terminal" order="7" weight="0.32900944" />
-      <window_info active="true" anchor="bottom" id="Find" order="1" visible="true" weight="0.32900944" />
-      <window_info anchor="bottom" id="Debug" order="3" weight="0.39976415" />
       <window_info anchor="bottom" id="Message" order="0" />
-      <window_info anchor="bottom" id="Event Log" order="7" side_tool="true" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Messages" order="7" weight="0.32900944" />
-      <window_info id="Favorites" order="2" side_tool="true" />
     </layout>
   </component>
   <component name="VcsContentAnnotationSettings">
@@ -257,14 +255,14 @@
       <breakpoints>
         <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
           <url>file://$PROJECT_DIR$/main.c</url>
-          <line>221</line>
+          <line>392</line>
           <option name="timeStamp" value="156" />
         </line-breakpoint>
       </breakpoints>
       <breakpoints-dialog>
         <breakpoints-dialog />
       </breakpoints-dialog>
-      <option name="time" value="157" />
+      <option name="time" value="161" />
     </breakpoint-manager>
     <watches-manager>
       <configuration name="CMakeRunConfiguration">
@@ -651,40 +649,47 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/CMakeLists.txt">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/main.h">
+    <entry file="file:///usr/include/stdio.h">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="300">
-          <caret line="20" column="57" selection-start-line="20" selection-start-column="57" selection-end-line="20" selection-end-column="57" />
+        <state relative-caret-position="61">
+          <caret line="164" column="14" selection-start-line="164" selection-start-column="14" selection-end-line="164" selection-end-column="14" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/graph.c">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="191">
+          <caret line="114" column="69" selection-start-line="114" selection-start-column="69" selection-end-line="114" selection-end-column="69" />
           <folding>
-            <element signature="e#49#69#0" expanded="true" />
+            <element signature="e#48#68#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/graph.h">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="622">
-          <caret line="67" column="13" selection-start-line="67" selection-start-column="9" selection-end-line="67" selection-end-column="13" />
+        <state relative-caret-position="-157">
+          <caret line="23" column="8" selection-start-line="23" selection-start-column="4" selection-end-line="23" selection-end-column="8" />
           <folding>
             <element signature="e#114#133#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/graph.c">
+    <entry file="file://$PROJECT_DIR$/main.h">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="375">
-          <caret line="25" lean-forward="true" selection-start-line="25" selection-end-line="25" />
+        <state relative-caret-position="-4">
+          <caret line="8" lean-forward="true" selection-start-line="8" selection-end-line="8" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/main.c">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="188">
-          <caret line="268" column="56" selection-start-line="268" selection-start-column="56" selection-end-line="268" selection-end-column="56" />
+        <state relative-caret-position="302">
+          <caret line="113" column="15" selection-start-line="113" selection-start-column="15" selection-end-line="113" selection-end-column="15" />
+          <folding>
+            <element signature="e#0#20#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
