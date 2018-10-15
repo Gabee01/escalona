@@ -2,7 +2,7 @@
 // Created by Gabriel Carraro on 9/10/18.
 //
 #include <ecpglib.h>
-#include "graph.h"
+#include "dataStructures.h"
 
 Graph initGraph() {
     Graph g = malloc(sizeof(struct graph));

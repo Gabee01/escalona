@@ -150,6 +150,33 @@ graph.c.s:
 	$(MAKE) -f CMakeFiles/escalona_refact.dir/build.make CMakeFiles/escalona_refact.dir/graph.c.s
 .PHONY : graph.c.s
 
+logs.o: logs.c.o
+
+.PHONY : logs.o
+
+# target to build an object file
+logs.c.o:
+	$(MAKE) -f CMakeFiles/escalona_refact.dir/build.make CMakeFiles/escalona_refact.dir/logs.c.o
+.PHONY : logs.c.o
+
+logs.i: logs.c.i
+
+.PHONY : logs.i
+
+# target to preprocess a source file
+logs.c.i:
+	$(MAKE) -f CMakeFiles/escalona_refact.dir/build.make CMakeFiles/escalona_refact.dir/logs.c.i
+.PHONY : logs.c.i
+
+logs.s: logs.c.s
+
+.PHONY : logs.s
+
+# target to generate assembly for a file
+logs.c.s:
+	$(MAKE) -f CMakeFiles/escalona_refact.dir/build.make CMakeFiles/escalona_refact.dir/logs.c.s
+.PHONY : logs.c.s
+
 main.o: main.c.o
 
 .PHONY : main.o
@@ -189,6 +216,9 @@ help:
 	@echo "... graph.o"
 	@echo "... graph.i"
 	@echo "... graph.s"
+	@echo "... logs.o"
+	@echo "... logs.i"
+	@echo "... logs.s"
 	@echo "... main.o"
 	@echo "... main.i"
 	@echo "... main.s"

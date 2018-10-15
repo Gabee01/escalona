@@ -1,6 +1,6 @@
 CC=gcc
 CFLAGS=-Wall -I.
-OBJ = main.o graph.o
+OBJ = main.o graph.o logs.o
 
 %.o: %.c
 	$(CC) -c -o $@ $< $(CFLAGS)
