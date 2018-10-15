@@ -7,6 +7,8 @@
 #IncludeRegexTransform: 
 
 /Users/gabrielcarraro/Workspace/topicos-bd/escalona-refact/graph.c
+ecpglib.h
+-
 graph.h
 /Users/gabrielcarraro/Workspace/topicos-bd/escalona-refact/graph.h
 

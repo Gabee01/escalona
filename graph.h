@@ -7,56 +7,95 @@
 
 #include <stdlib.h>
 #include <stdio.h>
-//#include <stdbool.h>
 
 typedef struct graph *Graph;
 typedef struct node *Node;
-typedef struct list *List;
-typedef struct array *Array;
+typedef struct tLog *Log;
+typedef struct instructionsList *InstructionsList;
+typedef struct logsList *LogsList;
+typedef struct intArray *IntArray;
+typedef struct variable *Variable;
+typedef struct varsArray *VarsArray;
+typedef struct instruction Instruction;
 
-struct array{
-    char *data;
+struct instruction{
+    int time;
+    int transaction;
+    char operation;
+    char varName;
+    int value;
+} instruction;
+
+struct variable{
+    char name;
+    int value;
+} variable;
+
+struct varsArray{
     int count;
-} array;
+    Variable *values;
+} varsArray;
 
-struct list{
-  char **data;
+struct intArray{
+    int *values;
+    int count;
+} intArray;
+
+struct instructionsList{
   int count;
-} list;
+  Instruction *values;
+} instructionsList;
+
+struct logsList{
+    int count;
+    Log *values;
+} logsList;
+
+struct tLog{
+    int time;
+    int action;
+    int transaction;
+    char varName;
+    int initialValue;
+    int newValue;
+} tLog;
 
 struct node{
-    char label;
-    Node *neighbors;
+    int label;
     int neighborsCount;
     int color;
-    List log;
+    Node *neighbors;
 } node;
 
 struct graph {
     int nodesCount;
     int edgesCount;
     Node *nodes;
-    Array transactionsIds;
-    Array awaiting;
-    List instructions;
+    IntArray transactionsIds;
+    IntArray awaiting;
+    InstructionsList instructions;
 };
 
 #define WHITE 0
 #define GRAY 1
 #define BLACK 99
-#define TIME 0
-#define TRANSACTION 1
-#define OPERATION 2
-#define ENTITY 3
+
+#define ACTION_START 77
+#define ACTION_CHANGEVAR 88
+#define ACTION_COMMIT 99
+#define ACTION_ABORT 11
+
 
 Graph initGraph();
-Node newNode(char label);
-Node getNode(Graph scheduling, char label);
+Node newNode(int label);
+Node getNode(Graph scheduling, int label);
 void addNode(Graph pGraph, Node pNode);
-void addArrayData(Array array, char data);
-void removeArrayData(Array array, char data);
-void addListData(List list, const char data[4]);
-void addEdges(Graph pGraph, char, char);
+void addInt(IntArray array, int data);
+void addOrUpdateVariable(VarsArray array, Variable var, int shouldUpdate);
+void removeInt(IntArray array, int data);
+void removeVariable(VarsArray varsArray, Variable value);
+void addInstruction(InstructionsList instructionList, Instruction instruction);
+void addEdges(Graph pGraph, int, int);
 void newNeighborhood(Node pNode, Node neighbor);
 
 #endif //ESCALONA_REFACT_GRAPH_H

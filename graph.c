@@ -1,7 +1,7 @@
 //
 // Created by Gabriel Carraro on 9/10/18.
 //
-
+#include <ecpglib.h>
 #include "graph.h"
 
 Graph initGraph() {
@@ -10,31 +10,29 @@ Graph initGraph() {
     g->edgesCount = 0;
     g->nodesCount = 0;
 
-    g->nodes = malloc(sizeof(Node));
-    g->transactionsIds = malloc(sizeof(Array));
-    g->transactionsIds->data = malloc(sizeof(char *));
+//    g->nodes = malloc(sizeof(Node));
+    g->transactionsIds = malloc(sizeof(IntArray));
+    g->transactionsIds->values = malloc(sizeof(int *));
     g->transactionsIds->count = 0;
 
-    g->awaiting = malloc(sizeof(Array));
-    g->awaiting->data = malloc(sizeof(char *));
+    g->awaiting = malloc(sizeof(IntArray));
+    g->awaiting->values = malloc(sizeof(int *));
     g->awaiting->count = 0;
 
-    g->instructions = malloc(sizeof(List));
-    g->instructions->data = malloc(sizeof(char **));
+    g->instructions = malloc(sizeof(InstructionsList));
+    g->instructions->values = malloc(sizeof(char **));
     g->instructions->count = 0;
 
     g->nodes = NULL;
-
     return g;
 }
 
-Node newNode(const char label) {
+Node newNode(int label) {
     Node node = malloc(sizeof(struct node));
     node->label = label; // Label = transaction id
     node->neighbors = malloc(sizeof(Node));
     node->neighborsCount = 0;
     node->color = WHITE;
-    node->log = malloc(sizeof(List));
 
     return node;
 }
@@ -48,15 +46,15 @@ void addNode(Graph pGraph, Node pNode){
     pGraph->nodes[pGraph->nodesCount]->color = pNode->color;
     pGraph->nodes[pGraph->nodesCount]->label = pNode->label;
 
-    addArrayData(pGraph->transactionsIds, pNode->label);
-    addArrayData(pGraph->awaiting, pNode->label);
+    addInt(pGraph->transactionsIds, pNode->label);
+    addInt(pGraph->awaiting, pNode->label);
 
     pGraph->nodesCount++;
 }
 
-Node getNode(Graph scheduling, char label) {
+Node getNode(Graph scheduling, int label) {
     for (int i = 0; i < scheduling->nodesCount; i++)
-        if (scheduling->transactionsIds->data[i] == label)
+        if (scheduling->transactionsIds->values[i] == label)
             return scheduling->nodes[i];
 
     return NULL;
@@ -69,7 +67,7 @@ void newNeighborhood(Node pNode, Node neighbor) {
     pNode->neighborsCount = pNode->neighborsCount + 1;
 }
 
-void addEdges(Graph pGraph, char src, char dst) {
+void addEdges(Graph pGraph, int src, int dst) {
     Node nodeSrc = getNode(pGraph, src);
     Node nodeDst = getNode(pGraph, dst);
 
@@ -77,41 +75,77 @@ void addEdges(Graph pGraph, char src, char dst) {
     pGraph->edgesCount++;
 }
 
-void addArrayData(Array array, char data) {
-    //if have data, see if already exists
+void addInt(IntArray array, int data) {
+    //if have values, see if already exists
     if (array->count > 0)
         for (int i = 0; i < array->count; i++)
-            if (array->data[i] == data)
+            if (array->values[i] == data)
                 return;
 
-    array->data = (char *) realloc(array->data, (sizeof(char) * (array->count + 1)));
-    array->data[array->count] = data;
+    array->values = (int *) realloc(array->values, (sizeof(int) * (array->count + 1)));
+    array->values[array->count] = data;
     array->count++;
 }
 
-void addListData(List list, const char data[4 + MAX_VALUE_SIZE]) {
-    list->data = (char **) realloc(list->data, (sizeof(char *) * list->count + 1));
+void addOrUpdateVariable(VarsArray array, Variable var, int shouldUpdate) {
+    //if have values, see if already exists
+    if (array->count > 0 && shouldUpdate){
+        for (int i = 0; i < array->count; i++){
+            if (array->values[i] == var) {
+                array->values[i]->value = var->value;
+                return;
+            }
+        }
+    }
+    if (array->count == 0){
+//        printf("\narray count: %d", array->count);
+        array->values = malloc(sizeof(struct variable *));
+        array->values[array->count] = malloc(sizeof(struct variable));
+    }
+    else{
+        array->count++;
+        array->values[array->count] = realloc(array->values[array->count], (sizeof(struct variable) * (array->count)));
+    }
 
-    list->data[list->count] = malloc(sizeof(char[4 + MAX_VALUE_SIZE]));
-
-    list->data[list->count][TIME] = data[TIME];
-    list->data[list->count][TRANSACTION] = data[TRANSACTION];
-    list->data[list->count][OPERATION] = data[OPERATION];
-    list->data[list->count][ENTITY] = data[ENTITY];
-    list->data[list->count][VALUE] = data[VALUE];
-
-    list->count++;
+    array->values[array->count]->value = var->value;
+    array->values[array->count]->name = var->name;
 }
 
-void removeArrayData(Array array, char data) {
+
+void addInstruction(InstructionsList instructionList, Instruction input) {
+    instructionList->values = (Instruction *) realloc(instructionList->values, (sizeof(struct instruction) * instructionList->count + 1));
+
+
+    instructionList->values[instructionList->count].time = input.time;
+    instructionList->values[instructionList->count].transaction = input.transaction;
+    instructionList->values[instructionList->count].operation = input.operation;
+    instructionList->values[instructionList->count].varName = input.varName;
+    instructionList->values[instructionList->count].value = input.value;
+    instructionList->count++;
+}
+
+void removeVariable(VarsArray varsArray, Variable value) {
+    for (int i = 0; i < varsArray->count; i++){
+        if (varsArray->values[i] == value){
+            varsArray->values[i] = varsArray->values[varsArray->count - 1];
+            varsArray->count--;
+            if (varsArray->count == 0)
+                varsArray->values = NULL;
+            else
+                varsArray->values = realloc(varsArray->values, (sizeof(char) * varsArray->count));
+        }
+    }
+}
+
+void removeInt(IntArray array, int value) {
     for (int i = 0; i < array->count; i++){
-        if (array->data[i] == data){
-            array->data[i] = array->data[array->count - 1];
+        if (array->values[i] == value){
+            array->values[i] = array->values[array->count - 1];
             array->count--;
             if (array->count == 0)
-                array->data = NULL;
+                array->values = NULL;
             else
-                array->data = realloc(array->data, (sizeof(char) * array->count));
+                array->values = realloc(array->values, (sizeof(char) * array->count));
         }
     }
 }
