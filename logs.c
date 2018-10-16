@@ -146,7 +146,7 @@ void addLog(LogsList logs, Log log) {
         }
         else{
             logs->count++;
-            logs->values = realloc(logs->values, sizeof(struct tLog *) * logs->count + 1);
+            logs->values = realloc(logs->values, sizeof(struct tLog *) * (logs->count + 1));
         }
     }
     logs->values[logs->count] = malloc(sizeof(struct tLog));

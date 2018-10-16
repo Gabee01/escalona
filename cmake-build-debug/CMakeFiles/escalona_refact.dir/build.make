@@ -81,28 +81,28 @@ CMakeFiles/escalona_refact.dir/main.c.o.provides: CMakeFiles/escalona_refact.dir
 CMakeFiles/escalona_refact.dir/main.c.o.provides.build: CMakeFiles/escalona_refact.dir/main.c.o
 
 
-CMakeFiles/escalona_refact.dir/graph.c.o: CMakeFiles/escalona_refact.dir/flags.make
-CMakeFiles/escalona_refact.dir/graph.c.o: ../graph.c
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/gabrielcarraro/Workspace/topicos-bd/escalona-refact/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building C object CMakeFiles/escalona_refact.dir/graph.c.o"
-	/Library/Developer/CommandLineTools/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/escalona_refact.dir/graph.c.o   -c /Users/gabrielcarraro/Workspace/topicos-bd/escalona-refact/graph.c
+CMakeFiles/escalona_refact.dir/dataStructures.c.o: CMakeFiles/escalona_refact.dir/flags.make
+CMakeFiles/escalona_refact.dir/dataStructures.c.o: ../dataStructures.c
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/gabrielcarraro/Workspace/topicos-bd/escalona-refact/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building C object CMakeFiles/escalona_refact.dir/dataStructures.c.o"
+	/Library/Developer/CommandLineTools/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/escalona_refact.dir/dataStructures.c.o   -c /Users/gabrielcarraro/Workspace/topicos-bd/escalona-refact/dataStructures.c
 
-CMakeFiles/escalona_refact.dir/graph.c.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/escalona_refact.dir/graph.c.i"
-	/Library/Developer/CommandLineTools/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/gabrielcarraro/Workspace/topicos-bd/escalona-refact/graph.c > CMakeFiles/escalona_refact.dir/graph.c.i
+CMakeFiles/escalona_refact.dir/dataStructures.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/escalona_refact.dir/dataStructures.c.i"
+	/Library/Developer/CommandLineTools/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/gabrielcarraro/Workspace/topicos-bd/escalona-refact/dataStructures.c > CMakeFiles/escalona_refact.dir/dataStructures.c.i
 
-CMakeFiles/escalona_refact.dir/graph.c.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/escalona_refact.dir/graph.c.s"
-	/Library/Developer/CommandLineTools/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/gabrielcarraro/Workspace/topicos-bd/escalona-refact/graph.c -o CMakeFiles/escalona_refact.dir/graph.c.s
+CMakeFiles/escalona_refact.dir/dataStructures.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/escalona_refact.dir/dataStructures.c.s"
+	/Library/Developer/CommandLineTools/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/gabrielcarraro/Workspace/topicos-bd/escalona-refact/dataStructures.c -o CMakeFiles/escalona_refact.dir/dataStructures.c.s
 
-CMakeFiles/escalona_refact.dir/graph.c.o.requires:
+CMakeFiles/escalona_refact.dir/dataStructures.c.o.requires:
 
-.PHONY : CMakeFiles/escalona_refact.dir/graph.c.o.requires
+.PHONY : CMakeFiles/escalona_refact.dir/dataStructures.c.o.requires
 
-CMakeFiles/escalona_refact.dir/graph.c.o.provides: CMakeFiles/escalona_refact.dir/graph.c.o.requires
-	$(MAKE) -f CMakeFiles/escalona_refact.dir/build.make CMakeFiles/escalona_refact.dir/graph.c.o.provides.build
-.PHONY : CMakeFiles/escalona_refact.dir/graph.c.o.provides
+CMakeFiles/escalona_refact.dir/dataStructures.c.o.provides: CMakeFiles/escalona_refact.dir/dataStructures.c.o.requires
+	$(MAKE) -f CMakeFiles/escalona_refact.dir/build.make CMakeFiles/escalona_refact.dir/dataStructures.c.o.provides.build
+.PHONY : CMakeFiles/escalona_refact.dir/dataStructures.c.o.provides
 
-CMakeFiles/escalona_refact.dir/graph.c.o.provides.build: CMakeFiles/escalona_refact.dir/graph.c.o
+CMakeFiles/escalona_refact.dir/dataStructures.c.o.provides.build: CMakeFiles/escalona_refact.dir/dataStructures.c.o
 
 
 CMakeFiles/escalona_refact.dir/logs.c.o: CMakeFiles/escalona_refact.dir/flags.make
@@ -132,14 +132,14 @@ CMakeFiles/escalona_refact.dir/logs.c.o.provides.build: CMakeFiles/escalona_refa
 # Object files for target escalona_refact
 escalona_refact_OBJECTS = \
 "CMakeFiles/escalona_refact.dir/main.c.o" \
-"CMakeFiles/escalona_refact.dir/graph.c.o" \
+"CMakeFiles/escalona_refact.dir/dataStructures.c.o" \
 "CMakeFiles/escalona_refact.dir/logs.c.o"
 
 # External object files for target escalona_refact
 escalona_refact_EXTERNAL_OBJECTS =
 
 escalona_refact: CMakeFiles/escalona_refact.dir/main.c.o
-escalona_refact: CMakeFiles/escalona_refact.dir/graph.c.o
+escalona_refact: CMakeFiles/escalona_refact.dir/dataStructures.c.o
 escalona_refact: CMakeFiles/escalona_refact.dir/logs.c.o
 escalona_refact: CMakeFiles/escalona_refact.dir/build.make
 escalona_refact: CMakeFiles/escalona_refact.dir/link.txt
@@ -152,7 +152,7 @@ CMakeFiles/escalona_refact.dir/build: escalona_refact
 .PHONY : CMakeFiles/escalona_refact.dir/build
 
 CMakeFiles/escalona_refact.dir/requires: CMakeFiles/escalona_refact.dir/main.c.o.requires
-CMakeFiles/escalona_refact.dir/requires: CMakeFiles/escalona_refact.dir/graph.c.o.requires
+CMakeFiles/escalona_refact.dir/requires: CMakeFiles/escalona_refact.dir/dataStructures.c.o.requires
 CMakeFiles/escalona_refact.dir/requires: CMakeFiles/escalona_refact.dir/logs.c.o.requires
 
 .PHONY : CMakeFiles/escalona_refact.dir/requires

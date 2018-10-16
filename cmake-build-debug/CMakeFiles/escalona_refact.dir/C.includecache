@@ -6,25 +6,29 @@
 
 #IncludeRegexTransform: 
 
-/Users/gabrielcarraro/Workspace/topicos-bd/escalona-refact/graph.c
-ecpglib.h
--
-graph.h
-/Users/gabrielcarraro/Workspace/topicos-bd/escalona-refact/graph.h
+/Users/gabrielcarraro/Workspace/topicos-bd/escalona-refact/dataStructures.c
+dataStructures.h
+/Users/gabrielcarraro/Workspace/topicos-bd/escalona-refact/dataStructures.h
 
-/Users/gabrielcarraro/Workspace/topicos-bd/escalona-refact/graph.h
+/Users/gabrielcarraro/Workspace/topicos-bd/escalona-refact/dataStructures.h
 stdlib.h
 -
 stdio.h
 -
+
+/Users/gabrielcarraro/Workspace/topicos-bd/escalona-refact/logs.c
+logs.h
+/Users/gabrielcarraro/Workspace/topicos-bd/escalona-refact/logs.h
+
+/Users/gabrielcarraro/Workspace/topicos-bd/escalona-refact/logs.h
+dataStructures.h
+/Users/gabrielcarraro/Workspace/topicos-bd/escalona-refact/dataStructures.h
 
 /Users/gabrielcarraro/Workspace/topicos-bd/escalona-refact/main.c
 main.h
 /Users/gabrielcarraro/Workspace/topicos-bd/escalona-refact/main.h
 
 /Users/gabrielcarraro/Workspace/topicos-bd/escalona-refact/main.h
-ecpglib.h
--
-graph.h
-/Users/gabrielcarraro/Workspace/topicos-bd/escalona-refact/graph.h
+logs.h
+/Users/gabrielcarraro/Workspace/topicos-bd/escalona-refact/logs.h
 

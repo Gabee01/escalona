@@ -1,7 +1,6 @@
 //
 // Created by Gabriel Carraro on 9/10/18.
 //
-#include <ecpglib.h>
 #include "dataStructures.h"
 
 Graph initGraph() {
@@ -61,7 +60,7 @@ Node getNode(Graph scheduling, int label) {
 }
 
 void newNeighborhood(Node pNode, Node neighbor) {
-    pNode->neighbors = (Node *)realloc(pNode->neighbors, (sizeof(Node) * pNode->neighborsCount + 1));
+    pNode->neighbors = (Node *)realloc(pNode->neighbors, (sizeof(Node) * (pNode->neighborsCount + 1)));
 
     pNode->neighbors[pNode->neighborsCount] = neighbor;
     pNode->neighborsCount = pNode->neighborsCount + 1;
@@ -113,7 +112,7 @@ void addOrUpdateVariable(VarsArray array, Variable var, int shouldUpdate) {
 
 
 void addInstruction(InstructionsList instructionList, Instruction input) {
-    instructionList->values = (Instruction *) realloc(instructionList->values, (sizeof(struct instruction) * instructionList->count + 1));
+    instructionList->values = (Instruction *) realloc(instructionList->values, (sizeof(struct instruction) * (instructionList->count + 1)));
 
 
     instructionList->values[instructionList->count].time = input.time;

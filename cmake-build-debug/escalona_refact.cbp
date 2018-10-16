@@ -80,16 +80,16 @@
 				</MakeCommands>
 			</Target>
 		</Build>
-		<Unit filename="/Users/gabrielcarraro/Workspace/topicos-bd/escalona-refact/cmake-build-debug/logs.h">
+		<Unit filename="/Users/gabrielcarraro/Workspace/topicos-bd/escalona-refact/dataStructures.c">
 			<Option target="escalona_refact"/>
 		</Unit>
-		<Unit filename="/Users/gabrielcarraro/Workspace/topicos-bd/escalona-refact/graph.c">
-			<Option target="escalona_refact"/>
-		</Unit>
-		<Unit filename="/Users/gabrielcarraro/Workspace/topicos-bd/escalona-refact/graph.h">
+		<Unit filename="/Users/gabrielcarraro/Workspace/topicos-bd/escalona-refact/dataStructures.h">
 			<Option target="escalona_refact"/>
 		</Unit>
 		<Unit filename="/Users/gabrielcarraro/Workspace/topicos-bd/escalona-refact/logs.c">
+			<Option target="escalona_refact"/>
+		</Unit>
+		<Unit filename="/Users/gabrielcarraro/Workspace/topicos-bd/escalona-refact/logs.h">
 			<Option target="escalona_refact"/>
 		</Unit>
 		<Unit filename="/Users/gabrielcarraro/Workspace/topicos-bd/escalona-refact/main.c">

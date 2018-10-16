@@ -4,8 +4,6 @@
 
 #include "main.h"
 
-int getVarInitialValue(LogsList pList, Instruction instruction);
-
 int main() {
     int schedulingCount = 0;
 

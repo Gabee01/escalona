@@ -123,32 +123,32 @@ escalona_refact/fast:
 	$(MAKE) -f CMakeFiles/escalona_refact.dir/build.make CMakeFiles/escalona_refact.dir/build
 .PHONY : escalona_refact/fast
 
-graph.o: graph.c.o
+dataStructures.o: dataStructures.c.o
 
-.PHONY : graph.o
+.PHONY : dataStructures.o
 
 # target to build an object file
-graph.c.o:
-	$(MAKE) -f CMakeFiles/escalona_refact.dir/build.make CMakeFiles/escalona_refact.dir/graph.c.o
-.PHONY : graph.c.o
+dataStructures.c.o:
+	$(MAKE) -f CMakeFiles/escalona_refact.dir/build.make CMakeFiles/escalona_refact.dir/dataStructures.c.o
+.PHONY : dataStructures.c.o
 
-graph.i: graph.c.i
+dataStructures.i: dataStructures.c.i
 
-.PHONY : graph.i
+.PHONY : dataStructures.i
 
 # target to preprocess a source file
-graph.c.i:
-	$(MAKE) -f CMakeFiles/escalona_refact.dir/build.make CMakeFiles/escalona_refact.dir/graph.c.i
-.PHONY : graph.c.i
+dataStructures.c.i:
+	$(MAKE) -f CMakeFiles/escalona_refact.dir/build.make CMakeFiles/escalona_refact.dir/dataStructures.c.i
+.PHONY : dataStructures.c.i
 
-graph.s: graph.c.s
+dataStructures.s: dataStructures.c.s
 
-.PHONY : graph.s
+.PHONY : dataStructures.s
 
 # target to generate assembly for a file
-graph.c.s:
-	$(MAKE) -f CMakeFiles/escalona_refact.dir/build.make CMakeFiles/escalona_refact.dir/graph.c.s
-.PHONY : graph.c.s
+dataStructures.c.s:
+	$(MAKE) -f CMakeFiles/escalona_refact.dir/build.make CMakeFiles/escalona_refact.dir/dataStructures.c.s
+.PHONY : dataStructures.c.s
 
 logs.o: logs.c.o
 
@@ -213,9 +213,9 @@ help:
 	@echo "... rebuild_cache"
 	@echo "... edit_cache"
 	@echo "... escalona_refact"
-	@echo "... graph.o"
-	@echo "... graph.i"
-	@echo "... graph.s"
+	@echo "... dataStructures.o"
+	@echo "... dataStructures.i"
+	@echo "... dataStructures.s"
 	@echo "... logs.o"
 	@echo "... logs.i"
 	@echo "... logs.s"
